@@ -19,6 +19,9 @@
 */**.env.test.local
 */**.env.production.local
 */**.env
+rootCA.crt
+rootCA.key
+secret.yaml
 
 */**/npm-debug.log*
 */**/yarn-debug.log*
