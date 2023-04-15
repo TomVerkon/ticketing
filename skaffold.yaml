@@ -3,13 +3,23 @@ kind: Config
 metadata:
   name: ticketing
 build:
+  # local:
+  #   push: false
   artifacts:
     - image: tverkon/auth
       context: auth
       docker:
         dockerfile: Dockerfile
+      # sync:
+      #   manual:
+      #     - src: 'src/**/*/ts'
+      #       dest: .
 manifests:
   rawYaml:
     - infra/k8s/*
 deploy:
   kubectl: {}
+# deploy:
+#   kubectl:
+#     manifests:
+#       - ./infra/k8s/*
