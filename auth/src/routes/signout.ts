@@ -2,7 +2,7 @@ import express, { Request, Response } from 'express';
 
 const router = express.Router();
 
-router.post('/api/users/currentuser', (req: Request, res: Response) => {
+router.post('/api/users/currentuser', async (req: Request, res: Response) => {
   res.send('Hi there from signout router');
 });
 

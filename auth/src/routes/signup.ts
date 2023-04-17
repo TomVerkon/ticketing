@@ -14,7 +14,7 @@ router.post(
       .isLength({ min: 8, max: 20 })
       .withMessage('Pwd must be between 8 and 20 chars inclusive'),
   ],
-  (req: Request, res: Response) => {
+  async (req: Request, res: Response) => {
     //console.log('In signup router');
     const errors = validationResult(req);
     //console.log('validated input');
