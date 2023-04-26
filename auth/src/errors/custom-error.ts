@@ -3,7 +3,7 @@ export interface ErrorMessage {
   field?: string;
 }
 
-export type ErrorMessageRA = ErrorMessage[];
+export type ErrorMessages = ErrorMessage[];
 
 export abstract class CustomError extends Error {
   abstract statusCode: number;
@@ -13,5 +13,5 @@ export abstract class CustomError extends Error {
     Object.setPrototypeOf(this, CustomError.prototype);
   }
 
-  abstract serializeErrors(): ErrorMessageRA;
+  abstract serializeErrors(): ErrorMessages;
 }

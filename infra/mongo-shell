@@ -1,0 +1,11 @@
+docker ps; // get running containers and get mongo container id:
+
+CONTAINER ID   IMAGE          COMMAND                  CREATED          STATUS          PORTS     NAMES
+e826b15d5876   mongo          "docker-entrypoint.s…"   21 minutes ago   Up 21 minutes;
+
+// Run mongo shell in the mongo container
+docker exec - it e826b15d5876 mongosh;
+
+// collection is auth
+use auth;
+db.users.find();

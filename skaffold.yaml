@@ -1,4 +1,4 @@
-apiVersion: skaffold/v4beta4
+apiVersion: skaffold/v3alpha1
 kind: Config
 metadata:
   name: ticketing
@@ -16,7 +16,7 @@ build:
       #       dest: .
 manifests:
   rawYaml:
-    - infra/k8s/*
+    - ./infra/k8s/*
 deploy:
   kubectl: {}
 # deploy:
