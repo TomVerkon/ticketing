@@ -10,10 +10,17 @@ build:
       context: auth
       docker:
         dockerfile: Dockerfile
-      # sync:
+      sync:
+        infer: ['*/*.js']
       #   manual:
       #     - src: 'src/**/*/ts'
       #       dest: .
+    - image: tverkon/client
+      context: client
+      docker:
+        dockerfile: Dockerfile
+      sync:
+        infer: ['*/*.js']
 manifests:
   rawYaml:
     - ./infra/k8s/*
