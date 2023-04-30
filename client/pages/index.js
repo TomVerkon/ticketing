@@ -6,7 +6,7 @@ const LandingPage = ({ currentUser }) => {
   return (
     <div className='container mt-3'>
       <h1>
-        Welcome to the Landing page {email}
+        {currentUser ? `Welcome ${email}` : 'You are NOT signed in'}
       </h1>
       <button className='btn btn-danger'>Hello</button>
     </div>
