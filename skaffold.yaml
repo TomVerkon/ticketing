@@ -21,6 +21,15 @@ build:
         dockerfile: Dockerfile
       sync:
         infer: ['*/*.js']
+    - image: tverkon/tickets
+      context: tickets
+      docker:
+        dockerfile: Dockerfile
+      sync:
+        infer: ['*/*.js']
+      #   manual:
+      #     - src: 'src/**/*/ts'
+      #       dest: .
 manifests:
   rawYaml:
     - ./infra/k8s/*
