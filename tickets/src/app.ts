@@ -2,7 +2,12 @@ import express from 'express';
 import 'express-async-errors';
 import { json } from 'body-parser';
 import cookieSession from 'cookie-session';
-import { NotFoundError, errorHandler } from '@tverkon-ticketing/common';
+import {
+  NotFoundError,
+  currentUser,
+  errorHandler,
+} from '@tverkon-ticketing/common';
+import { createTicketRouter } from './routes/new';
 
 declare global {
   namespace express {
@@ -22,6 +27,10 @@ app.use(
     secure: process.env.NODE_ENV !== 'test' ? true : false,
   })
 );
+
+app.use(currentUser);
+
+app.use(createTicketRouter);
 
 app.all('*', async (req, res) => {
   throw new NotFoundError();
