@@ -1,29 +1,47 @@
-import request from 'supertest';
-import { app } from '../../app';
-import { response } from 'express';
+import request from "supertest";
+import { app } from "../../app";
+import { response } from "express";
 
-it('has a route handler listening to /api/tickets for POST requests', async () => {
-  const response = await request(app).post('/api/tickets').send({});
+it("has a route handler listening to /api/tickets for POST requests", async () => {
+  const response = await request(app).post("/api/tickets").send({ title: "A title", price: 10.0 });
   expect(response.status).not.toEqual(404);
+  console.log(global.createMsg(expect.getState().currentTestName, "not 404", response));
 });
 
-it('can only be accessed if user is signed in', async () => {
-  await request(app).post('/api/tickets').send({}).expect(401);
+it("can only be accessed if user is signed in", async () => {
+  const response = await request(app).post("/api/tickets").send({}).expect(401);
+  console.log(global.createMsg(expect.getState().currentTestName, "401", response));
 });
 
-it('return a status other than 401 if user is signed in', async () => {
-  const cookie = global.signin();
-  //console.log(cookie);
-  const response = await request(app)
-    .post('/api/tickets')
-    .set('Cookie', cookie)
-    .send({});
-  //console.log(response);
+it("return a status other than 401 if user is signed in", async () => {
+  const cookie = await global.signin();
+  const response = await request(app).post("/api/tickets").set("Cookie", cookie).send({});
   expect(response.status).not.toEqual(401);
+  console.log(global.createMsg(expect.getState().currentTestName, "not 401", response));
 });
 
-it('returns an error if invalid title is provided', async () => {});
+it("returns an error if invalid title is provided", async () => {
+  const cookie = await global.signin();
+  let response = await request(app).post("/api/tickets").set("Cookie", cookie).send({ title: "", price: 10 }).expect(400);
+  console.log(global.createMsg(expect.getState().currentTestName, "400", response));
+});
 
-it('returns an error if invalid price is provided', async () => {});
+it("returns an error if no title is provided", async () => {
+  const cookie = await global.signin();
+  const response = await request(app).post("/api/tickets").set("Cookie", global.signin()).send({ price: 10 }).expect(400);
+  console.log(global.createMsg(expect.getState().currentTestName, "400", response));
+});
 
-it('creates a ticket if valid input id provided', async () => {});
+it("returns an error if invalid price is provided", async () => {
+  const cookie = await global.signin();
+  const response = await request(app).post("/api/tickets").set("Cookie", global.signin()).send({ title: "xyzzy", price: -10 }).expect(400);
+  console.log(global.createMsg(expect.getState().currentTestName, "400", response));
+});
+
+it("returns an error if no price is provided", async () => {
+  const cookie = await global.signin();
+  let response = await request(app).post("/api/tickets").set("Cookie", global.signin()).send({ title: "xyzzy" }).expect(400);
+  console.log(global.createMsg(expect.getState().currentTestName, "400", response));
+});
+
+it("creates a ticket if valid input id provided", async () => {});

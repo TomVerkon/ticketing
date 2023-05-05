@@ -13,7 +13,11 @@
     "testEnvironment": "node",
     "setupFilesAfterEnv": [
       "./src/test/setup.ts"
-    ]
+    ],
+    "verbose": true
+  },
+  "prettier": {
+    "printWidth": 160
   },
   "keywords": [],
   "author": "",
