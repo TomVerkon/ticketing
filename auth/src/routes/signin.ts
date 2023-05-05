@@ -1,21 +1,18 @@
-import express, { Request, Response, Router } from 'express';
-import { body } from 'express-validator';
-import jwt from 'jsonwebtoken';
+import express, { Request, Response, Router } from "express";
+import { body } from "express-validator";
+import jwt from "jsonwebtoken";
 
-import { User } from '../model/user';
-import { validateRequest, BadRequestError } from '@tverkon-ticketing/common';
-import { Password } from '../service/password';
+import { User } from "../model/user";
+import { validateRequest, BadRequestError } from "@tverkon-ticketing/common";
+import { Password } from "../service/password";
 
 const router = express.Router();
 
 router.post(
-  '/api/users/signin',
+  "/api/users/signin",
   [
-    body('email').isEmail().withMessage('Email must be valid'),
-    body('password')
-      .trim()
-      .notEmpty()
-      .withMessage('You must supply a password'),
+    body("email").isEmail().withMessage("Email must be valid"),
+    body("password").trim().notEmpty().withMessage("You must supply a password"),
   ],
   validateRequest,
 
@@ -24,14 +21,11 @@ router.post(
 
     const existingUser = await User.findOne({ email });
     if (!existingUser) {
-      throw new BadRequestError('Invalid Credentials');
+      throw new BadRequestError("Invalid Credentials");
     }
-    const passwordsMatch = await Password.compare(
-      existingUser.password,
-      password
-    );
+    const passwordsMatch = await Password.compare(existingUser.password, password);
     if (!passwordsMatch) {
-      throw new BadRequestError('Invalid Credentials');
+      throw new BadRequestError("Invalid Credentials");
     }
     // generate jwt and store in session object
     const userJwt = jwt.sign(

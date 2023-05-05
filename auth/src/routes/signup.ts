@@ -1,20 +1,17 @@
-import express, { Request, Response } from 'express';
-import { body } from 'express-validator';
-import jwt from 'jsonwebtoken';
+import express, { Request, Response } from "express";
+import { body } from "express-validator";
+import jwt from "jsonwebtoken";
 
-import { validateRequest, BadRequestError } from '@tverkon-ticketing/common';
-import { User } from '../model/user';
+import { validateRequest, BadRequestError } from "@tverkon-ticketing/common";
+import { User } from "../model/user";
 
 const router = express.Router();
 
 router.post(
-  '/api/users/signup',
+  "/api/users/signup",
   [
-    body('email').trim().isEmail().withMessage('Email must be valid'),
-    body('password')
-      .trim()
-      .isLength({ min: 8, max: 20 })
-      .withMessage('Pwd must be between 8 and 20 chars inclusive'),
+    body("email").trim().isEmail().withMessage("Email must be valid"),
+    body("password").trim().isLength({ min: 8, max: 20 }).withMessage("Pwd must be between 8 and 20 chars inclusive"),
   ],
   validateRequest,
 
@@ -24,7 +21,7 @@ router.post(
     const existingUser = await User.findOne({ email });
 
     if (existingUser) {
-      throw new BadRequestError('email in use!', 'email');
+      throw new BadRequestError("email in use!", "email");
     }
     const user = User.build({ email, password });
 
