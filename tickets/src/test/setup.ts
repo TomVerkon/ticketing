@@ -6,7 +6,7 @@ import { app } from "../app";
 
 declare global {
   var signin: () => string[];
-  var createMsg: (title: string, expected: string, response: request.Response) => string;
+  var createMsg: (title: string, expected: string, response: request.Response, altResponse?: string) => string;
 }
 
 let mongo: any;
@@ -51,7 +51,14 @@ global.signin = () => {
   return [`session=${base64}`.trim()];
 };
 
-global.createMsg = (title: string, expected: string, response: request.Response): string => {
-  const resTxt = JSON.parse(response.text);
-  return `${title}\nexpected: ${expected}, returned: ${response.status.toString()}\n${JSON.stringify(resTxt, null, 2)}`;
+global.createMsg = (title: string, expected: string, response: request.Response, altResponse?: string): string => {
+  let resTxt: string = "";
+  let returnedStatus = "200";
+  if (!response) {
+    resTxt = altResponse;
+  } else {
+    resTxt = JSON.parse(response.text);
+    returnedStatus = response.status.toString();
+  }
+  return `${title}\nexpected: ${expected}, returned: ${returnedStatus}\n${JSON.stringify(resTxt, null, 2)}`;
 };

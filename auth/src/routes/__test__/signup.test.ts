@@ -6,7 +6,7 @@ it("returns a 201 on successful signup", async () => {
     .post("/api/users/signup")
     .send({ email: "test@test.com", password: "password" })
     .expect(201);
-  console.log(global.createMsg(expect.getState().currentTestName, "201", response));
+  // console.log(global.createMsg(expect.getState().currentTestName, "201", response));
 });
 
 it("returns a 400 with an invalid email", async () => {
@@ -14,7 +14,7 @@ it("returns a 400 with an invalid email", async () => {
     .post("/api/users/signup")
     .send({ email: "testtest.com", password: "password" })
     .expect(400);
-  console.log(global.createMsg(expect.getState().currentTestName, "400", response));
+  // console.log(global.createMsg(expect.getState().currentTestName, "400", response));
 });
 
 it("returns a 400 with an invalid password", async () => {
@@ -22,12 +22,12 @@ it("returns a 400 with an invalid password", async () => {
     .post("/api/users/signup")
     .send({ email: "test@test.com", password: "pass" })
     .expect(400);
-  console.log(global.createMsg(expect.getState().currentTestName, "400", response));
+  // console.log(global.createMsg(expect.getState().currentTestName, "400", response));
 });
 
 it("returns a 400 with missing email", async () => {
   const response = await request(app).post("/api/users/signup").send({ email: null, password: "password" }).expect(400);
-  console.log(global.createMsg(expect.getState().currentTestName, "400", response));
+  // console.log(global.createMsg(expect.getState().currentTestName, "400", response));
 });
 
 it("returns a 400 with missing password", async () => {
@@ -35,7 +35,7 @@ it("returns a 400 with missing password", async () => {
     .post("/api/users/signup")
     .send({ email: "test@test.com", password: null })
     .expect(400);
-  console.log(global.createMsg(expect.getState().currentTestName, "400", response));
+  // console.log(global.createMsg(expect.getState().currentTestName, "400", response));
 });
 
 it("return 400, disallows duplicate emails", async () => {
@@ -45,7 +45,7 @@ it("return 400, disallows duplicate emails", async () => {
     .post("/api/users/signup")
     .send({ email: "test@test.com", password: "password" })
     .expect(400);
-  console.log(global.createMsg(expect.getState().currentTestName, "400", response));
+  // console.log(global.createMsg(expect.getState().currentTestName, "400", response));
 });
 
 it("sets a cookie on the session on successful signup", async () => {
@@ -54,5 +54,5 @@ it("sets a cookie on the session on successful signup", async () => {
     .send({ email: "test@test.com", password: "password" })
     .expect(201);
   expect(response.get("Set-Cookie")).toBeDefined();
-  console.log(global.createMsg(expect.getState().currentTestName, "201", response));
+  // console.log(global.createMsg(expect.getState().currentTestName, "201", response));
 });

@@ -7,7 +7,7 @@ it("fails when an email that does not exist is supplied", async () => {
     .post("/api/users/signin")
     .send({ email: "test@test.com", password: "password" })
     .expect(400);
-  console.log(global.createMsg(expect.getState().currentTestName, "400", response));
+  // console.log(global.createMsg(expect.getState().currentTestName, "400", response));
 });
 
 it("fails when an incorrect password is supplied", async () => {
@@ -18,7 +18,7 @@ it("fails when an incorrect password is supplied", async () => {
     .post("/api/users/signin")
     .send({ email: "test@test.com", password: "lkjahflkdsjh" })
     .expect(400);
-  console.log(global.createMsg(expect.getState().currentTestName, "400", response));
+  // console.log(global.createMsg(expect.getState().currentTestName, "400", response));
 });
 
 it("respondes with a cookie when an current logged in user is supplied", async () => {
@@ -30,5 +30,5 @@ it("respondes with a cookie when an current logged in user is supplied", async (
     .send({ email: "test@test.com", password: "password" })
     .expect(201);
   expect(response.get("Set-Cookie")).toBeDefined();
-  console.log(global.createMsg(expect.getState().currentTestName, "Set-Cookie", response));
+  // console.log(global.createMsg(expect.getState().currentTestName, "Set-Cookie", response));
 });
