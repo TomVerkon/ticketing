@@ -1,8 +1,8 @@
-import { CustomError, ErrorMessages } from "@tverkon-ticketing/common";
+import { CustomError, ErrorMessages } from './custom-error';
 
 export class ForbiddenError extends CustomError {
   statusCode = 403;
-  private static reason = "Forbidden";
+  private static reason = 'Forbidden';
 
   constructor() {
     super(ForbiddenError.reason);
