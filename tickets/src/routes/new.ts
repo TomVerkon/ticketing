@@ -1,7 +1,6 @@
-import { currentUser, requireAuth } from "@tverkon-ticketing/common";
 import { body } from "express-validator";
 import express, { Request, Response } from "express";
-import { validateRequest, BadRequestError } from "@tverkon-ticketing/common";
+import { validateRequest, requireAuth } from "@tverkon-ticketing/common";
 import { Ticket } from "../model/ticket";
 
 const router = express.Router();

@@ -61,15 +61,16 @@ it("returns an error if no price is provided", async () => {
 });
 
 it("creates a ticket if valid input is provided", async () => {
-  const cookie = await global.signin();
   let tickets = await Ticket.find({});
   expect(tickets.length).toEqual(0);
-  const response = await await request(app)
+
+  const response = await request(app)
     .post("/api/tickets")
-    .set("Cookie", cookie)
+    .set("Cookie", global.signin())
     .send({ title: "asdfghj", price: 20 })
     .expect(201);
   // console.log(global.createMsg(expect.getState().currentTestName, "201", response));
+
   tickets = await Ticket.find({});
   expect(tickets.length).toEqual(1);
 });

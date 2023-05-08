@@ -5,6 +5,8 @@ import cookieSession from "cookie-session";
 import { NotFoundError, currentUser, errorHandler } from "@tverkon-ticketing/common";
 import { createTicketRouter } from "./routes/new";
 import { showTicketRouter } from "./routes/show";
+import { indexTicketRouter } from "./routes";
+import { putTicketRouter } from "./routes/put";
 
 declare global {
   namespace express {
@@ -29,6 +31,8 @@ app.use(currentUser);
 
 app.use(createTicketRouter);
 app.use(showTicketRouter);
+app.use(indexTicketRouter);
+app.use(putTicketRouter);
 
 app.all("*", async (req, res) => {
   throw new NotFoundError();

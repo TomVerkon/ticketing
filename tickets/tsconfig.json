@@ -12,14 +12,7 @@
     "sourceMap": true,
     "outDir": "./dist"
   },
-  "lib": [
-    "es2015"
-  ],
-  "include": [
-    "src/**/*"
-  ],
-  "exclude": [
-    "node_modules",
-    "dist"
-  ]
+  "lib": ["es2015"],
+  "include": ["src/**/*", "../common/src/errors/forbidden-error.ts"],
+  "exclude": ["node_modules", "dist"]
 }

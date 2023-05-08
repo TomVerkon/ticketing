@@ -4,12 +4,12 @@ import { Ticket } from "../model/ticket";
 
 const router = express.Router();
 
-router.get("/api/tickets/:id", async (req: Request, res: Response) => {
-  const ticket = await Ticket.findById(req.params.id);
-  if (!ticket) {
+router.get("/api/tickets", async (req: Request, res: Response) => {
+  const tickets = await Ticket.find({});
+  if (!tickets || tickets.length === 0) {
     throw new NotFoundError();
   }
-  return res.send(ticket);
+  return res.send(tickets);
 });
 
-export { router as showTicketRouter };
+export { router as indexTicketRouter };
