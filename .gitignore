@@ -5,6 +5,8 @@
 */**/.pnp
 */**.pnp.js
 
+nats-test
+
 # testing
 */**/coverage
 

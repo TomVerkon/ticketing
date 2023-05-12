@@ -2,6 +2,8 @@ import { validateRequest, NotFoundError, requireAuth, ForbiddenError } from "@tv
 import { body } from "express-validator";
 import express, { Request, Response } from "express";
 import { Ticket } from "../model/ticket";
+import { TicketUpdatedPublisher } from "../events/publishers/ticket-updated-publisher";
+import { natsWrapper } from "../nats-wrapper";
 
 const router = express.Router();
 
@@ -16,16 +18,24 @@ router.put(
   validateRequest,
   async (req: Request, res: Response) => {
     const ticket = await Ticket.findById(req.params.id);
-    console.log(req.currentUser.id);
+    // console.log(req.currentUser.id);
     if (!ticket) {
       throw new NotFoundError();
     } else if (ticket.userId !== req.currentUser.id) {
-      console.log(ticket.userId, " !== ", req.currentUser.id);
+      // console.log(ticket.userId, " !== ", req.currentUser.id);
       throw new ForbiddenError();
     } else {
       ticket.title = req.body.title;
       ticket.price = req.body.price;
       await ticket.updateOne(ticket);
+
+      new TicketUpdatedPublisher(natsWrapper.client).publish({
+        id: ticket.id,
+        title: ticket.title,
+        price: ticket.price,
+        userId: ticket.userId,
+      });
+
       res.send(ticket);
     }
   }

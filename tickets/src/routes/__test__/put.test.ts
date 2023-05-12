@@ -1,7 +1,7 @@
 import request from "supertest";
 import { app } from "../../app";
 import mongoose from "mongoose";
-import { Ticket } from "../../model/ticket";
+import { natsWrapper } from "../../nats-wrapper";
 
 it("returns a 404 if provided id does not exist", async () => {
   const id = new mongoose.Types.ObjectId().toHexString();
@@ -67,4 +67,33 @@ it("updates the ticket provided valid inputs", async () => {
   expect(ticket.title).toEqual("The title");
   expect(ticket.price).toEqual(1000.0);
   //console.log(global.createMsg(expect.getState().currentTestName, "403", response));
+});
+
+it("publishes an event on create ticket", async () => {
+  const response = await request(app)
+    .post("/api/tickets")
+    .set("Cookie", global.signin())
+    .send({ title: "asdfghj", price: 20 })
+    .expect(201);
+
+  expect(natsWrapper.client.publish).toHaveBeenCalled();
+});
+
+it("publishes an event on update ticket", async () => {
+  const cookie = global.signin();
+  let response = await request(app)
+    .post("/api/tickets")
+    .set("Cookie", cookie)
+    .send({ title: "asdfghj", price: 25 })
+    .expect(201);
+  // console.log(global.createMsg(expect.getState().currentTestName, "201", response));
+  expect(natsWrapper.client.publish).toHaveBeenCalled();
+
+  response = await request(app)
+    .put(`/api/tickets/${response.body.id}`)
+    .set("Cookie", cookie)
+    .send({ title: "The title", price: 1000.0 })
+    .expect(200);
+
+  expect(natsWrapper.client.publish).toBeCalledTimes(2);
 });
