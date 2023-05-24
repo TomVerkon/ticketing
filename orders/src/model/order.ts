@@ -1,17 +1,15 @@
-import mongoose, { Date } from "mongoose";
+import mongoose from "mongoose";
+import { OrderStatus } from "@tverkon-ticketing/common";
+import { TicketDoc } from "./ticket";
 
-export enum OrderStatus {
-  OrderExpired = "order:expired",
-  OrderPaid = "order:paid",
-  OrderPending = "order:pending",
-}
+export { OrderStatus };
 
 // properties that are required to create a new User
 interface OrderAttrs {
   userId: string;
   status: OrderStatus;
   expiresAt: Date;
-  ticketId: string;
+  ticket: TicketDoc;
 }
 
 // properties that a User Document has
@@ -19,7 +17,7 @@ interface OrderDoc extends mongoose.Document {
   userId: string;
   status: OrderStatus;
   expiresAt: Date;
-  ticketId: string;
+  ticket: TicketDoc;
 }
 
 // properties that a User model has
@@ -36,14 +34,15 @@ const orderSchema = new mongoose.Schema(
     status: {
       type: String,
       required: true,
+      enum: Object.values(OrderStatus),
+      default: OrderStatus.Created,
     },
     expiresAt: {
-      type: Date,
-      required: true,
+      type: mongoose.Schema.Types.Date,
     },
-    ticketId: {
-      type: String,
-      required: true,
+    ticket: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Ticket",
     },
   },
   {
@@ -51,7 +50,6 @@ const orderSchema = new mongoose.Schema(
       transform(doc, ret) {
         ret.id = ret._id;
         delete ret._id;
-        delete ret.__v;
       },
     },
   }

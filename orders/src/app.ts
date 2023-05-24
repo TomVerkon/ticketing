@@ -6,7 +6,7 @@ import { NotFoundError, currentUser, errorHandler } from "@tverkon-ticketing/com
 import { createOrderRouter } from "./routes/new";
 import { showOrderRouter } from "./routes/show";
 import { indexOrderRouter } from "./routes";
-import { deleteOrderRouter } from "./routes/delete";
+import { patchOrderRouter } from "./routes/patch";
 
 declare global {
   namespace express {
@@ -32,7 +32,7 @@ app.use(currentUser);
 app.use(createOrderRouter);
 app.use(showOrderRouter);
 app.use(indexOrderRouter);
-app.use(deleteOrderRouter);
+app.use(patchOrderRouter);
 
 app.all("*", async (req, res) => {
   throw new NotFoundError();
