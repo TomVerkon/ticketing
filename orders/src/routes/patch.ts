@@ -1,6 +1,8 @@
 import { NotFoundError, ForbiddenError, OrderStatus, requireAuth } from "@tverkon-ticketing/common";
 import express, { Request, Response } from "express";
 import { Order } from "../model/order";
+import { OrderCancelledPublisher } from "../events/publishers/order-cancelled-publisher";
+import { natsWrapper } from "../nats-wrapper";
 
 const router = express.Router();
 
@@ -13,9 +15,16 @@ router.patch("/api/orders/:orderId", requireAuth, async (req: Request, res: Resp
     throw new ForbiddenError();
   }
   order.status = OrderStatus.Cancelled;
-  const updatedOrder = order.save();
+  const updatedOrder = await order.save();
 
   // publish an event saying an order was cancelled
+  new OrderCancelledPublisher(natsWrapper.client).publish({
+    id: order.id,
+    ticket: {
+      id: order.ticket.id,
+    },
+  });
+
   return res.status(204).send();
 });
 

@@ -3,6 +3,7 @@ import mongoose from "mongoose";
 import { app } from "../../app";
 import { Ticket } from "../../model/ticket";
 import { Order, OrderStatus } from "../../model/order";
+import { natsWrapper } from "../../nats-wrapper";
 
 const saveTicket = async () => {
   const ticket = Ticket.build({ title: "Stones Concert", price: 500.0 });
@@ -66,4 +67,24 @@ it("returns an 204 if requested orderId is found and belongs to user", async () 
   const updatedOrder = await Order.findById(order.id);
   expect(updatedOrder.status).toEqual(OrderStatus.Cancelled);
   //console.log(global.createMsg(expect.getState().currentTestName, expectedStatus.toString(), response));
+});
+
+it("publishes an order cancelled event", async () => {
+  const ticket = Ticket.build({ title: "Stones Concert", price: 500.0 });
+  await ticket.save();
+
+  const cookie = global.signin();
+
+  let expectedStatus = 201;
+  // Create one order for user #1
+  let { body: order } = await request(app)
+    .post("/api/orders")
+    .set("Cookie", cookie)
+    .send({ ticketId: ticket.id })
+    .expect(expectedStatus);
+
+  const url = `/api/orders/${order.id}`;
+  expectedStatus = 204;
+  await request(app).patch(url).set("Cookie", cookie).send().expect(expectedStatus);
+  expect(natsWrapper.client.publish).toHaveBeenCalled();
 });

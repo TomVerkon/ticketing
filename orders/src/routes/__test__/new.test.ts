@@ -67,11 +67,14 @@ it("returns a 201, an order and reserves the ticket", async () => {
   // console.log(global.createMsg(expect.getState().currentTestName, expectedStatus.toString(), response));
 });
 
-it.todo("publishes an order created event"); //, async () => {
-// const response = await request(app)
-//   .post("/api/tickets")
-//   .set("Cookie", global.signin())
-//   .send({ title: "asdfghj", price: 20 })
-//   .expect(201);
-// expect(natsWrapper.client.publish).toHaveBeenCalled();
-// });
+it("publishes an order created event", async () => {
+  const ticket = Ticket.build({ title: "Stones Concert", price: 500.0 });
+  await ticket.save();
+  const ticketId = ticket.id;
+
+  const expectedStatus = 201;
+  const response = await request(app).post("/api/orders").set("Cookie", global.signin()).send({ ticketId: ticket.id });
+  expect(response.status).toEqual(expectedStatus);
+  expect(response.body.ticket.id).toEqual(ticketId);
+  expect(natsWrapper.client.publish).toHaveBeenCalled();
+});
