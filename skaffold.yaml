@@ -1,50 +1,39 @@
-apiVersion: skaffold/v3alpha1
+apiVersion: skaffold/v4beta4
 kind: Config
 metadata:
   name: ticketing
 build:
-  # local:
-  #   push: false
   artifacts:
     - image: tverkon/auth
       context: auth
+      sync:
+        infer:
+          - '*/*.js'
       docker:
         dockerfile: Dockerfile
-      sync:
-        infer: ['*/*.js']
-      #   manual:
-      #     - src: 'src/**/*/ts'
-      #       dest: .
     - image: tverkon/client
       context: client
+      sync:
+        infer:
+          - '*/*.js'
       docker:
         dockerfile: Dockerfile
-      sync:
-        infer: ['*/*.js']
     - image: tverkon/tickets
       context: tickets
+      sync:
+        infer:
+          - '*/*.js'
       docker:
         dockerfile: Dockerfile
-      sync:
-        infer: ['*/*.js']
-      #   manual:
-      #     - src: 'src/**/*/ts'
-      #       dest: .
     - image: tverkon/orders
       context: orders
+      sync:
+        infer:
+          - '*/*.js'
       docker:
         dockerfile: Dockerfile
-      sync:
-        infer: ['*/*.js']
-      #   manual:
-      #     - src: 'src/**/*/ts'
-      #       dest: .
 manifests:
   rawYaml:
     - ./infra/k8s/*
 deploy:
   kubectl: {}
-# deploy:
-#   kubectl:
-#     manifests:
-#       - ./infra/k8s/*

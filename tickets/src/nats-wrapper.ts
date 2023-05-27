@@ -1,5 +1,4 @@
 import nats, { Stan } from "node-nats-streaming";
-import { randomBytes } from "crypto";
 
 class NatsWrapper {
   private _client?: Stan;

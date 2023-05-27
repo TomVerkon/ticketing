@@ -1,4 +1,5 @@
 import mongoose from "mongoose";
+import { updateIfCurrentPlugin } from "mongoose-update-if-current";
 
 // properties that are required to create a new User
 interface TicketAttrs {
@@ -8,10 +9,11 @@ interface TicketAttrs {
 }
 
 // properties that a User Document has
-interface TicketDoc extends mongoose.Document {
+export interface TicketDoc extends mongoose.Document {
   title: string;
   price: number;
   userId: string;
+  version: number;
 }
 
 // properties that a User model has
@@ -44,6 +46,8 @@ const ticketSchema = new mongoose.Schema(
     },
   }
 );
+ticketSchema.set("versionKey", "version");
+ticketSchema.plugin(updateIfCurrentPlugin);
 ticketSchema.statics.build = (attrs: TicketAttrs) => {
   return new Ticket(attrs);
 };
