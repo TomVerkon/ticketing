@@ -60,8 +60,8 @@ router.post(
         id: ticket.id,
         price: ticket.price,
       },
-    }
-    console.log('publishing OrderCreatedEvent: ', orderCreatedEvent);
+    };
+    // console.log('publishing OrderCreatedEvent: ', orderCreatedEvent);
     new OrderCreatedPublisher(natsWrapper.client).publish(orderCreatedEvent);
 
     return res.status(201).send(order);

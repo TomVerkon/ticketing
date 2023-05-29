@@ -3,7 +3,7 @@ import { Order, OrderStatus } from "./order";
 import { updateIfCurrentPlugin } from "mongoose-update-if-current";
 
 interface TicketAttrs {
-  id: string;
+  id?: string;
   title: string;
   price: number;
   version?: number;
@@ -62,12 +62,9 @@ ticketSchema.methods.isReserved = async function () {
   // status is *not* cancelled
   const existingOrder = await Order.findOne({
     ticket: this,
-    //    status: { $in: [OrderStatus.AwaitingPayment, OrderStatus.Complete, OrderStatus.Created] },
     status: { $nin: [OrderStatus.Cancelled] },
   });
   return !!existingOrder;
-  // console.log(existingOrder);
-  // return existingOrder === null ? false : true;
 };
 
 const Ticket = mongoose.model<TicketDoc, TicketModel>("Ticket", ticketSchema);
