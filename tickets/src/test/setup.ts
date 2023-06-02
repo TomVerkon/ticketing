@@ -16,10 +16,15 @@ let mongo: any;
 beforeAll(async () => {
   process.env.JWT_KEY = "asdf";
 
-  mongo = await MongoMemoryServer.create();
-  const mongoUri = mongo.getUri();
+  let mongo;
+  try {
+    mongo = await MongoMemoryServer.create();
+    const mongoUri = mongo.getUri();
 
-  await mongoose.connect(mongoUri, {});
+    await mongoose.connect(mongoUri, {});
+  } catch (err) {
+    throw err;
+  }
 });
 
 beforeEach(async () => {
@@ -32,10 +37,10 @@ beforeEach(async () => {
 });
 
 afterAll(async () => {
+  await mongoose.connection.close();
   if (mongo) {
     await mongo.stop();
   }
-  await mongoose.connection.close();
 });
 
 global.signin = () => {

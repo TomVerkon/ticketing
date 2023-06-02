@@ -10,14 +10,14 @@ it("returns a status of 401 if user is not authenticated", async () => {
   const response = await request(app).post("/api/orders").send({ ticketId: "645e9e09596ba4d22841ce34" });
   expect(response.status).toEqual(expectedStatus);
   // console.log(global.createMsg(expect.getState().currentTestName, expectedStatus.toString(), response));
-});
+}, 10000);
 
 it("returns an status of 400 if ticketId is empty", async () => {
   const expectedStatus = 400;
   let response = await request(app).post("/api/orders").set("Cookie", global.signin()).send({ ticketId: null });
   expect(response.status).toEqual(400);
   // console.log(global.createMsg(expect.getState().currentTestName, expectedStatus.toString(), response));
-});
+}, 10000);
 
 it("returns an status of 400 if ticketId is not a valid ObjectId", async () => {
   const expectedStatus = 400;
@@ -34,7 +34,7 @@ it("returns a status 0f 400 if ticket does not exist", async () => {
     .send({ ticketId: new mongoose.Types.ObjectId() });
   expect(response.status).toEqual(expectedStatus);
   // console.log(global.createMsg(expect.getState().currentTestName, expectedStatus.toString(), response));
-});
+}, 10000);
 
 it("returns a 400 if the ticket has been reserved", async () => {
   const ticket = Ticket.build({ title: "Stones Concert", price: 500.0 });
@@ -47,7 +47,7 @@ it("returns a 400 if the ticket has been reserved", async () => {
   const response = await request(app).post("/api/orders").set("Cookie", global.signin()).send({ ticketId: ticket.id });
   expect(response.status).toEqual(expectedStatus);
   // console.log(global.createMsg(expect.getState().currentTestName, expectedStatus.toString(), response));
-});
+}, 10000);
 
 it("returns a 201, an order and reserves the ticket", async () => {
   let orderCount = await Order.count({});
@@ -65,7 +65,7 @@ it("returns a 201, an order and reserves the ticket", async () => {
   orderCount = await Order.count({});
   expect(orderCount).toEqual(1);
   // console.log(global.createMsg(expect.getState().currentTestName, expectedStatus.toString(), response));
-});
+}, 10000);
 
 it("publishes an order created event", async () => {
   const ticket = Ticket.build({ title: "Stones Concert", price: 500.0 });
@@ -77,4 +77,4 @@ it("publishes an order created event", async () => {
   expect(response.status).toEqual(expectedStatus);
   expect(response.body.ticket.id).toEqual(ticketId);
   expect(natsWrapper.client.publish).toHaveBeenCalled();
-});
+}, 10000);

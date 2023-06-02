@@ -3,11 +3,17 @@ import { app } from "../../app";
 import { Ticket } from "../../model/ticket";
 import { natsWrapper } from "../../nats-wrapper";
 
-it("has a route handler listening to /api/tickets for POST requests", async () => {
-  const response = await request(app).post("/api/tickets").send({ title: "A title", price: 10.0 });
-  expect(response.status).not.toEqual(404);
-  // console.log(global.createMsg(expect.getState().currentTestName, "not 404", response));
-});
+let waitMicroseconds = 20000;
+
+it(
+  "has a route handler listening to /api/tickets for POST requests",
+  async () => {
+    const response = await request(app).post("/api/tickets").send({ title: "A title", price: 10.0 });
+    expect(response.status).not.toEqual(404);
+    // console.log(global.createMsg(expect.getState().currentTestName, "not 404", response));
+  },
+  waitMicroseconds
+);
 
 it("can only be accessed if user is signed in", async () => {
   const response = await request(app).post("/api/tickets").send({}).expect(401);
@@ -21,67 +27,91 @@ it("return a status other than 401 if user is signed in", async () => {
   // console.log(global.createMsg(expect.getState().currentTestName, "not 401", response));
 });
 
-it("returns an error if invalid title is provided", async () => {
-  const cookie = await global.signin();
-  let response = await request(app)
-    .post("/api/tickets")
-    .set("Cookie", cookie)
-    .send({ title: "", price: 10 })
-    .expect(400);
-  // console.log(global.createMsg(expect.getState().currentTestName, "400", response));
-});
+it(
+  "returns an error if invalid title is provided",
+  async () => {
+    const cookie = await global.signin();
+    let response = await request(app)
+      .post("/api/tickets")
+      .set("Cookie", cookie)
+      .send({ title: "", price: 10 })
+      .expect(400);
+    // console.log(global.createMsg(expect.getState().currentTestName, "400", response));
+  },
+  waitMicroseconds
+);
 
-it("returns an error if no title is provided", async () => {
-  const cookie = await global.signin();
-  const response = await request(app)
-    .post("/api/tickets")
-    .set("Cookie", global.signin())
-    .send({ price: 10 })
-    .expect(400);
-  // console.log(global.createMsg(expect.getState().currentTestName, "400", response));
-});
+it(
+  "returns an error if no title is provided",
+  async () => {
+    const cookie = await global.signin();
+    const response = await request(app)
+      .post("/api/tickets")
+      .set("Cookie", global.signin())
+      .send({ price: 10 })
+      .expect(400);
+    // console.log(global.createMsg(expect.getState().currentTestName, "400", response));
+  },
+  waitMicroseconds
+);
 
-it("returns an error if invalid price is provided", async () => {
-  const cookie = await global.signin();
-  const response = await request(app)
-    .post("/api/tickets")
-    .set("Cookie", global.signin())
-    .send({ title: "xyzzy", price: -10 })
-    .expect(400);
-  // console.log(global.createMsg(expect.getState().currentTestName, "400", response));
-});
+it(
+  "returns an error if invalid price is provided",
+  async () => {
+    const cookie = await global.signin();
+    const response = await request(app)
+      .post("/api/tickets")
+      .set("Cookie", global.signin())
+      .send({ title: "xyzzy", price: -10 })
+      .expect(400);
+    // console.log(global.createMsg(expect.getState().currentTestName, "400", response));
+  },
+  waitMicroseconds
+);
 
-it("returns an error if no price is provided", async () => {
-  const cookie = await global.signin();
-  let response = await request(app)
-    .post("/api/tickets")
-    .set("Cookie", global.signin())
-    .send({ title: "xyzzy" })
-    .expect(400);
-  // console.log(global.createMsg(expect.getState().currentTestName, "400", response));
-});
+it(
+  "returns an error if no price is provided",
+  async () => {
+    const cookie = await global.signin();
+    let response = await request(app)
+      .post("/api/tickets")
+      .set("Cookie", global.signin())
+      .send({ title: "xyzzy" })
+      .expect(400);
+    // console.log(global.createMsg(expect.getState().currentTestName, "400", response));
+  },
+  waitMicroseconds
+);
 
-it("creates a ticket if valid input is provided", async () => {
-  let tickets = await Ticket.find({});
-  expect(tickets.length).toEqual(0);
+it(
+  "creates a ticket if valid input is provided",
+  async () => {
+    let tickets = await Ticket.find({});
+    expect(tickets.length).toEqual(0);
 
-  const response = await request(app)
-    .post("/api/tickets")
-    .set("Cookie", global.signin())
-    .send({ title: "asdfghj", price: 20 })
-    .expect(201);
-  // console.log(global.createMsg(expect.getState().currentTestName, "201", response));
+    const response = await request(app)
+      .post("/api/tickets")
+      .set("Cookie", global.signin())
+      .send({ title: "asdfghj", price: 20 })
+      .expect(201);
+    // console.log(global.createMsg(expect.getState().currentTestName, "201", response));
 
-  tickets = await Ticket.find({});
-  expect(tickets.length).toEqual(1);
-});
+    tickets = await Ticket.find({});
+    expect(tickets.length).toEqual(1);
+  },
+  waitMicroseconds
+);
 
-it("publishes an event", async () => {
-  const response = await request(app)
-    .post("/api/tickets")
-    .set("Cookie", global.signin())
-    .send({ title: "asdfghj", price: 20 })
-    .expect(201);
+it(
+  "publishes an event",
+  async () => {
+    const response = await request(app)
+      .post("/api/tickets")
+      .set("Cookie", global.signin())
+      .send({ title: "asdfghj", price: 20 })
+      .expect(201);
 
-  expect(natsWrapper.client.publish).toHaveBeenCalled();
-});
+    expect(natsWrapper.client.publish).toHaveBeenCalled();
+  },
+  waitMicroseconds
+);

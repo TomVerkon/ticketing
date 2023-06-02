@@ -47,7 +47,7 @@ ticketSchema.set("versionKey", "version");
 ticketSchema.plugin(updateIfCurrentPlugin);
 ticketSchema.statics.build = (attrs: TicketAttrs) => {
   return new Ticket({
-    id: attrs.id,
+    _id: attrs.id,
     title: attrs.title,
     price: attrs.price,
   });

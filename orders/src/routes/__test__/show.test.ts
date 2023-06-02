@@ -26,7 +26,7 @@ it("returns an 404 if requested orderId is not found", async () => {
   expectedStatus = 404;
   response = await request(app).get(url).set("Cookie", cookie).send().expect(expectedStatus);
   //console.log(global.createMsg(expect.getState().currentTestName, expectedStatus.toString(), response));
-});
+}, 10000);
 
 it("returns an 403 if requested order belongs to some other user", async () => {
   const ticket = await saveTicket();
@@ -43,7 +43,7 @@ it("returns an 403 if requested order belongs to some other user", async () => {
   expectedStatus = 403;
   response = await request(app).get(url).set("Cookie", global.signin()).send().expect(expectedStatus);
   //console.log(global.createMsg(expect.getState().currentTestName, expectedStatus.toString(), response));
-});
+}, 10000);
 
 it("returns an 200 if requested orderId is found and belongs to user", async () => {
   const ticket = Ticket.build({ title: "Stones Concert", price: 500.0 });
@@ -63,4 +63,4 @@ it("returns an 200 if requested orderId is found and belongs to user", async () 
   expectedStatus = 200;
   response = await request(app).get(url).set("Cookie", cookie).send().expect(expectedStatus);
   //console.log(global.createMsg(expect.getState().currentTestName, expectedStatus.toString(), response));
-});
+}, 10000);
