@@ -1,4 +1,10 @@
-import { validateRequest, NotFoundError, requireAuth, ForbiddenError } from "@tverkon-ticketing/common";
+import {
+  validateRequest,
+  NotFoundError,
+  requireAuth,
+  ForbiddenError,
+  BadRequestError,
+} from "@tverkon-ticketing/common";
 import { body } from "express-validator";
 import express, { Request, Response } from "express";
 import { Ticket } from "../model/ticket";
@@ -24,12 +30,14 @@ router.put(
     } else if (ticket.userId !== req.currentUser.id) {
       // console.log(ticket.userId, " !== ", req.currentUser.id);
       throw new ForbiddenError();
+    } else if (ticket.orderId !== undefined) {
+      throw new BadRequestError("Cannot edit a reserved ticket");
     } else {
       ticket.title = req.body.title;
       ticket.price = req.body.price;
       await ticket.save();
 
-      new TicketUpdatedPublisher(natsWrapper.client).publish({
+      await new TicketUpdatedPublisher(natsWrapper.client).publish({
         id: ticket.id,
         title: ticket.title,
         price: ticket.price,

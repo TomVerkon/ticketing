@@ -62,7 +62,7 @@ router.post(
       },
     };
     // console.log('publishing OrderCreatedEvent: ', orderCreatedEvent);
-    new OrderCreatedPublisher(natsWrapper.client).publish(orderCreatedEvent);
+    await new OrderCreatedPublisher(natsWrapper.client).publish(orderCreatedEvent);
 
     return res.status(201).send(order);
   }

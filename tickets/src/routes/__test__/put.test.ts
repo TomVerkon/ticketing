@@ -2,8 +2,9 @@ import request from "supertest";
 import { app } from "../../app";
 import mongoose from "mongoose";
 import { natsWrapper } from "../../nats-wrapper";
+import { Ticket } from "../../model/ticket";
 
-it("returns a 404 if provided id does not exist", async () => {
+it("returns a 404 if provided ticket does not exist", async () => {
   const id = new mongoose.Types.ObjectId().toHexString();
   const response = await request(app)
     .put(`/api/tickets/${id}`)
@@ -96,4 +97,22 @@ it("publishes an event on update ticket", async () => {
     .expect(200);
 
   expect(natsWrapper.client.publish).toBeCalledTimes(2);
+});
+
+it("returns a 400 if ticket is already reserved (orderId is defined)", async () => {
+  const cookie = global.signin();
+  const orderId = new mongoose.Types.ObjectId().toHexString();
+  let response = await request(app)
+    .post("/api/tickets")
+    .set("Cookie", cookie)
+    .send({ title: "asdfghj", price: 25 })
+    .expect(201);
+  const updateUrl = `/api/tickets/${response.body.id}`;
+  const ticket = await Ticket.findById(response.body.id);
+  ticket.set({ orderId: orderId });
+  await ticket.save();
+
+  response = await request(app).put(updateUrl).set("Cookie", cookie).send({ title: "querty", price: 100 }).expect(400);
+  const updatedTicket = await Ticket.findById(response.body.id);
+  //console.log(global.createMsg(expect.getState().currentTestName, "403", response));
 });

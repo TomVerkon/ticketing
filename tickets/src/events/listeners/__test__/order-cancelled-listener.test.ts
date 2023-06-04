@@ -1,5 +1,5 @@
-import { OrderCreatedEvent, OrderStatus, TicketUpdatedEvent } from "@tverkon-ticketing/common";
-import { OrderCreatedListener } from "../order-created-listener";
+import { OrderCancelledEvent, OrderStatus, TicketUpdatedEvent } from "@tverkon-ticketing/common";
+import { OrderCancelledListener } from "../order-cancelled-listener";
 import mongoose from "mongoose";
 import { Message } from "node-nats-streaming";
 import { natsWrapper } from "../../../__mocks__/nats-wrapper";
@@ -10,24 +10,23 @@ let waitMicroseconds = 20000;
 const setup = async () => {
   // create a fake instance of the listener
   // @ts-ignore
-  const listener = new OrderCreatedListener(natsWrapper.client);
+  const listener = new OrderCancelledListener(natsWrapper.client);
+
+  const orderId = new mongoose.Types.ObjectId().toHexString();
   // creste and save a ticket
   let ticket = await Ticket.build({
     title: "stones concert",
     price: 150,
     userId: new mongoose.Types.ObjectId().toHexString(),
   });
+  ticket.set({ orderId });
   ticket = await ticket.save();
   // create a fake data event
-  const data: OrderCreatedEvent["data"] = {
-    id: new mongoose.Types.ObjectId().toHexString(),
-    status: OrderStatus.Created,
-    expiresAt: new Date().toISOString(),
-    userId: new mongoose.Types.ObjectId().toHexString(),
+  const data: OrderCancelledEvent["data"] = {
+    id: orderId,
     version: 0,
     ticket: {
       id: ticket.id,
-      price: ticket.price,
     },
   };
   // create a fake message object
@@ -40,7 +39,7 @@ const setup = async () => {
 };
 
 it(
-  "sets the orderId in the ticket which means it has been reserved",
+  "resets the orderId in the ticket which means it is available",
   async () => {
     const { listener, data, msg } = await setup();
     // call the onMessage fn with data, and message objects
@@ -48,7 +47,7 @@ it(
     // write assertions to make sure the ticket orderId was updated
     const ticket = await Ticket.findById(data.ticket.id);
     expect(ticket).toBeDefined();
-    expect(ticket.orderId).toEqual(data.id);
+    expect(ticket.orderId).toBeUndefined();
     expect(ticket.id).toEqual(data.ticket.id);
   },
   waitMicroseconds
@@ -75,7 +74,7 @@ it(
     // write assertions to make sure msg.ack was called
     expect(natsWrapper.client.publish).toHaveBeenCalled();
     const ticketUpdatedData = JSON.parse(natsWrapper.client.publish.mock.calls[0][1]) as TicketUpdatedEvent["data"];
-    expect(data.id).toEqual(ticketUpdatedData.orderId);
+    expect(ticketUpdatedData.orderId).toBeUndefined();
   },
   waitMicroseconds
 );

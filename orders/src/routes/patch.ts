@@ -18,7 +18,7 @@ router.patch("/api/orders/:orderId", requireAuth, async (req: Request, res: Resp
   const updatedOrder = await order.save();
 
   // publish an event saying an order was cancelled
-  new OrderCancelledPublisher(natsWrapper.client).publish({
+  await new OrderCancelledPublisher(natsWrapper.client).publish({
     id: order.id,
     version: order.version,
     ticket: {

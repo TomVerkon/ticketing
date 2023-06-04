@@ -7,7 +7,7 @@
     "start": "ts-node-dev --poll src/index.ts",
     "debug": "ts-node-dev src/index.ts",
     "test": "jest --watchAll --no-cache --detectOpenHandles --forceExit",
-    "test-once": "jest --silent --no-cache --detectOpenHandles --forceExit"
+    "test-once": "jest --no-cache --detectOpenHandles --forceExit"
   },
   "jest": {
     "preset": "ts-jest",

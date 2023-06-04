@@ -1,22 +1,20 @@
 import { Message } from "node-nats-streaming";
-import { Subjects, Listener, OrderCreatedEvent, NotFoundError } from "@tverkon-ticketing/common";
+import { Subjects, Listener, OrderCancelledEvent, NotFoundError } from "@tverkon-ticketing/common";
 import { Ticket } from "../../model/ticket";
 import { queueGroupName } from "./queue-group-name";
-import mongoose from "mongoose";
 import { TicketUpdatedPublisher } from "../publishers/ticket-updated-publisher";
-import { natsWrapper } from "../../nats-wrapper";
 
-export class OrderCreatedListener extends Listener<OrderCreatedEvent> {
-  readonly subject = Subjects.OrderCreated;
+export class OrderCancelledListener extends Listener<OrderCancelledEvent> {
+  readonly subject = Subjects.OrderCancelled;
   queueGroupName = queueGroupName;
 
-  async onMessage(data: OrderCreatedEvent["data"], msg: Message) {
+  async onMessage(data: OrderCancelledEvent["data"], msg: Message) {
     // Find the ticket the order is using
     const ticket = await Ticket.findById(data.ticket.id);
     // if no ticket, throw error
     if (!ticket) throw new NotFoundError();
     // mark the ticket as reserved by populating the orderId
-    ticket.set({ orderId: data.id });
+    ticket.set({ orderId: undefined });
     // save the ticket
     await ticket.save();
 
