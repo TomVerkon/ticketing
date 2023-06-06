@@ -1,5 +1,6 @@
 import { Message, Stan } from 'node-nats-streaming';
 import { Subjects } from './subjects';
+import { loggingMessages } from '../utils/log-messages';
 
 require('dotenv').config();
 
@@ -40,7 +41,7 @@ export abstract class Listener<T extends Event> {
       console.log(process.env.LOG_MSGS);
       console.log('logMsgs :', this.logMsgs);
 
-      if (this.logMsgs)
+      if (loggingMessages())
         console.log(
           `Message received: ${this.subject} / ${this.queueGroupName}`
         );
