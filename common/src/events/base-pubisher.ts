@@ -1,6 +1,7 @@
 import { Message, Stan } from 'node-nats-streaming';
 import { Subjects } from './subjects';
 import { loggingMessages } from '../utils/log-messages';
+import { consoleLog } from '../utils/log-console';
 
 require('dotenv').config();
 
@@ -24,7 +25,7 @@ export abstract class Publisher<T extends Event> {
           return reject(err);
         }
         if (loggingMessages())
-          console.log('Message published to subject:', this.subject);
+          consoleLog('Message published to subject:', this.subject);
         resolve();
       });
     });
