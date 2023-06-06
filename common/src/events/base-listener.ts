@@ -15,7 +15,6 @@ export abstract class Listener<T extends Event> {
   abstract onMessage(data: T['data'], msg: Message): void;
   protected client: Stan;
   protected ackWait = 5 * 1000;
-  private logMsgs = process.env.LOG_MSGS === 'true' ? true : false;
 
   constructor(client: Stan) {
     this.client = client;
@@ -38,9 +37,6 @@ export abstract class Listener<T extends Event> {
     );
 
     subscription.on('message', (msg: Message) => {
-      console.log(process.env.LOG_MSGS);
-      console.log('logMsgs :', this.logMsgs);
-
       if (loggingMessages())
         console.log(
           `Message received: ${this.subject} / ${this.queueGroupName}`
