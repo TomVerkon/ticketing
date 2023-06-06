@@ -1,6 +1,7 @@
-import nats, { Message, Stan } from 'node-nats-streaming';
-import { randomBytes } from 'crypto';
+import { Message, Stan } from 'node-nats-streaming';
 import { Subjects } from './subjects';
+
+require('dotenv').config();
 
 interface Event {
   subject: Subjects;
@@ -13,6 +14,7 @@ export abstract class Listener<T extends Event> {
   abstract onMessage(data: T['data'], msg: Message): void;
   protected client: Stan;
   protected ackWait = 5 * 1000;
+  private logMsgs = process.env.LOG_MSGS;
 
   constructor(client: Stan) {
     this.client = client;
@@ -35,7 +37,10 @@ export abstract class Listener<T extends Event> {
     );
 
     subscription.on('message', (msg: Message) => {
-      // console.log(`Message received: ${this.subject} / ${this.queueGroupName}`);
+      if (this.logMsgs)
+        console.log(
+          `Message received: ${this.subject} / ${this.queueGroupName}`
+        );
 
       const parsedData = this.parseMessage(msg);
       this.onMessage(parsedData, msg);
