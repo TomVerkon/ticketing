@@ -37,6 +37,9 @@ export abstract class Listener<T extends Event> {
     );
 
     subscription.on('message', (msg: Message) => {
+      console.log(process.env.LOG_MSGS);
+      console.log('logMsgs :', this.logMsgs);
+
       if (this.logMsgs)
         console.log(
           `Message received: ${this.subject} / ${this.queueGroupName}`
