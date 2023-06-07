@@ -1,7 +1,8 @@
 import { CustomError, ErrorMessages } from './custom-error';
+import { ForbiddenErrorStatusCode } from './error-status-codes';
 
 export class ForbiddenError extends CustomError {
-  statusCode = 403;
+  statusCode = ForbiddenErrorStatusCode;
   private static reason = 'Forbidden';
 
   constructor() {
