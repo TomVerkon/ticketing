@@ -1,6 +1,7 @@
 import { CustomError, ErrorMessages } from './custom-error';
 import { ErrorStatusCode } from './error-status-codes';
 
+/** NotFoundErrorStatusCode = 404 */
 export class NotFoundError extends CustomError {
   statusCode = ErrorStatusCode.NotFoundErrorStatusCode;
 

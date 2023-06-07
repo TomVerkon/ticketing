@@ -1,6 +1,7 @@
 import { CustomError, ErrorMessages } from './custom-error';
 import { ErrorStatusCode } from './error-status-codes';
 
+/** BadRequestErrorStatusCode = 400 */
 export class BadRequestError extends CustomError {
   statusCode = ErrorStatusCode.BadRequestErrorStatusCode;
 

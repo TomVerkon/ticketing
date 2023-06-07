@@ -2,6 +2,7 @@ import { ValidationError } from 'express-validator';
 import { CustomError, ErrorMessages } from './custom-error';
 import { ErrorStatusCode } from './error-status-codes';
 
+/** RequestValidationErrorStatusCode = 400 */
 export class RequestValidationError extends CustomError {
   statusCode = ErrorStatusCode.RequestValidationErrorStatusCode;
 

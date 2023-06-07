@@ -1,6 +1,7 @@
 import { CustomError, ErrorMessages } from './custom-error';
 import { ErrorStatusCode } from './error-status-codes';
 
+/** DatabaseConnectionErrorStatusCode = 500 */
 export class DatabaseConnectionError extends CustomError {
   statusCode = ErrorStatusCode.DatabaseConnectionErrorStatusCode;
 
