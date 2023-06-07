@@ -1,5 +1,6 @@
 import { NextFunction, Request, Response } from 'express';
 import { CustomError } from '../errors/custom-error';
+import { StatusCode } from '../errors/status-codes';
 
 export const errorHandler = (
   err: Error,
@@ -14,6 +15,6 @@ export const errorHandler = (
   console.log('Not a Custom Error:', err);
 
   return res
-    .status(400)
+    .status(StatusCode.BadRequestError)
     .send({ errors: [{ message: 'Unknown error occured' }] });
 };
