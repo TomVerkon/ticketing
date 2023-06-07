@@ -1,6 +1,8 @@
-export const BadRequestErrorStatusCode = 400;
-export const RequestValidationErrorStatusCode = 400;
-export const NotAuthorizedErrorStatusCode = 401; // Unauthenticated
-export const ForbiddenErrorStatusCode = 403; // Unauthorized
-export const NotFoundErrorStatusCode = 404;
-export const DatabaseConnectionErrorStatusCode = 500;
+export enum ErrorStatusCode {
+  BadRequestErrorStatusCode = 400,
+  RequestValidationErrorStatusCode = 400,
+  NotAuthorizedErrorStatusCode = 401, // Unauthenticated
+  ForbiddenErrorStatusCode = 403, // Unauthorized
+  NotFoundErrorStatusCode = 404,
+  DatabaseConnectionErrorStatusCode = 500,
+}

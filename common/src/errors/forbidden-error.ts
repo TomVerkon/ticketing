@@ -1,16 +1,15 @@
 import { CustomError, ErrorMessages } from './custom-error';
-import { ForbiddenErrorStatusCode } from './error-status-codes';
+import { ErrorStatusCode } from './error-status-codes';
 
 export class ForbiddenError extends CustomError {
-  statusCode = ForbiddenErrorStatusCode;
-  private static reason = 'Forbidden';
+  statusCode = ErrorStatusCode.ForbiddenErrorStatusCode;
 
   constructor() {
-    super(ForbiddenError.reason);
+    super('Forbidden');
     Object.setPrototypeOf(this, ForbiddenError.prototype);
   }
 
   serializeErrors(): ErrorMessages {
-    return [{ message: ForbiddenError.reason }];
+    return [{ message: super.message }];
   }
 }

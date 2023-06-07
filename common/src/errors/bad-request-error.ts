@@ -1,8 +1,8 @@
 import { CustomError, ErrorMessages } from './custom-error';
-import { BadRequestErrorStatusCode } from './error-status-codes';
+import { ErrorStatusCode } from './error-status-codes';
 
 export class BadRequestError extends CustomError {
-  statusCode = BadRequestErrorStatusCode;
+  statusCode = ErrorStatusCode.BadRequestErrorStatusCode;
 
   constructor(public message: string, public field?: string) {
     super(message);

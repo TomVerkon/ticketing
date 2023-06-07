@@ -1,3 +1,5 @@
+import { ErrorStatusCode } from './error-status-codes';
+
 export interface ErrorMessage {
   message: string;
   field?: string;
@@ -6,7 +8,7 @@ export interface ErrorMessage {
 export type ErrorMessages = ErrorMessage[];
 
 export abstract class CustomError extends Error {
-  abstract statusCode: number;
+  abstract statusCode: ErrorStatusCode;
 
   constructor(message: string) {
     super(message);
