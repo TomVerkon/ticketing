@@ -1,9 +1,9 @@
 import { CustomError, ErrorMessages } from './custom-error';
-import { ErrorStatusCode } from './error-status-codes';
+import { StatusCode } from './status-codes';
 
-/** ForbiddenErrorStatusCode = 403 */
+/** ForbiddenError = 403 */
 export class ForbiddenError extends CustomError {
-  statusCode = ErrorStatusCode.ForbiddenErrorStatusCode;
+  statusCode = StatusCode.ForbiddenError;
 
   constructor() {
     super('Forbidden');

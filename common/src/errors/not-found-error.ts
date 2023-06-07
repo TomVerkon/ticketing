@@ -1,9 +1,9 @@
 import { CustomError, ErrorMessages } from './custom-error';
-import { ErrorStatusCode } from './error-status-codes';
+import { StatusCode } from './status-codes';
 
-/** NotFoundErrorStatusCode = 404 */
+/** NotFoundError = 404 */
 export class NotFoundError extends CustomError {
-  statusCode = ErrorStatusCode.NotFoundErrorStatusCode;
+  statusCode = StatusCode.NotFoundError;
 
   constructor() {
     super('Route not Found');

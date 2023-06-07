@@ -1,10 +1,10 @@
 import { ValidationError } from 'express-validator';
 import { CustomError, ErrorMessages } from './custom-error';
-import { ErrorStatusCode } from './error-status-codes';
+import { StatusCode } from './status-codes';
 
-/** RequestValidationErrorStatusCode = 400 */
+/** RequestValidationError = 400 */
 export class RequestValidationError extends CustomError {
-  statusCode = ErrorStatusCode.RequestValidationErrorStatusCode;
+  statusCode = StatusCode.RequestValidationError;
 
   constructor(public errors: ValidationError[]) {
     super('Invalid request parameters');

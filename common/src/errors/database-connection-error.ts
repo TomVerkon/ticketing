@@ -1,9 +1,9 @@
 import { CustomError, ErrorMessages } from './custom-error';
-import { ErrorStatusCode } from './error-status-codes';
+import { StatusCode } from './status-codes';
 
-/** DatabaseConnectionErrorStatusCode = 500 */
+/** DatabaseConnectionError = 500 */
 export class DatabaseConnectionError extends CustomError {
-  statusCode = ErrorStatusCode.DatabaseConnectionErrorStatusCode;
+  statusCode = StatusCode.DatabaseConnectionError;
 
   constructor() {
     super('Error connecting to database');

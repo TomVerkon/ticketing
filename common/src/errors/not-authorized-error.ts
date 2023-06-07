@@ -1,9 +1,9 @@
 import { CustomError, ErrorMessages } from './custom-error';
-import { ErrorStatusCode } from './error-status-codes';
+import { StatusCode } from './status-codes';
 
-/** NotAuthorizedErrorStatusCode = 401 */
+/** NotAuthorizedError = 401 */
 export class NotAuthorizedError extends CustomError {
-  statusCode = ErrorStatusCode.NotAuthorizedErrorStatusCode;
+  statusCode = StatusCode.NotAuthorizedError;
 
   constructor() {
     super('Not Authenticated');

@@ -1,4 +1,4 @@
-import { ErrorStatusCode } from './error-status-codes';
+import { ErrorStatusCode } from './status-codes';
 
 export interface ErrorMessage {
   message: string;
