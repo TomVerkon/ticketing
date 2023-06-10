@@ -5,7 +5,14 @@ import { app } from "../app";
 
 declare global {
   var signup: () => Promise<string[]>;
-  var createMsg: (title: string, expected: string, response: request.Response) => string;
+  /**
+   * This function in meant to display formatted output while testing
+   * @param {jest.Expect} title - Test name will be obtained by calling title.getState().currentTestName
+   * @param {string | number} expected - The expected result
+   * @param {string | number} actual - The actual result
+   * @param {string} response? - pass response.text in to format/display what is returned to the client
+   */
+  var createMsg: (title: jest.Expect, expected: string | number, actual: string | number, response?: string) => string;
 }
 
 let mongo: any;
@@ -43,7 +50,24 @@ global.signup = async () => {
   return cookie;
 };
 
-global.createMsg = (title: string, expected: string, response: request.Response): string => {
-  const resTxt = JSON.parse(response.text);
-  return `${title}\nexpected: ${expected}, returned: ${response.status.toString()}\n${JSON.stringify(resTxt, null, 2)}`;
+/**
+ * This function in meant to display formatted output while testing
+ * @param {jest.Expect} title - Test name will be obtained by calling title.getState().currentTestName
+ * @param {string | number} expected - The expected result
+ * @param {string | number} actual - The actual result
+ * @param {string} response? - pass response.text in to format/display what is returned to the client
+ */
+global.createMsg = (
+  title: jest.Expect,
+  expected: string | number,
+  actual: string | number,
+  response?: string
+): string => {
+  const testName = title.getState().currentTestName;
+  const msgPrefix = `${testName}\nexpected: ${expected.toString()}, returned: ${actual.toString()}`;
+  let msgSuffix = "";
+  if (response) {
+    msgSuffix = `\n${JSON.stringify(JSON.parse(response), null, 2)}`;
+  }
+  return `${msgPrefix}${msgSuffix}`;
 };

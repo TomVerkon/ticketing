@@ -3,64 +3,76 @@ import { app } from "../../app";
 import { Order } from "../../model/order";
 import { Ticket } from "../../model/ticket";
 import mongoose from "mongoose";
+import { StatusCode } from "@tverkon-ticketing/common";
 
 const saveTicket = async () => {
   const ticket = Ticket.build({ title: "Stones Concert", price: 500.0 });
   return await ticket.save();
 };
 
-it("returns an 404 if requested orderId is not found", async () => {
-  const ticket = await saveTicket();
-  const cookie = global.signin();
+let waitMicroseconds = 20000;
 
-  let expectedStatus = 201;
-  // Create one order for cookie user
-  let response = await request(app)
-    .post("/api/orders")
-    .set("Cookie", cookie)
-    .send({ ticketId: ticket.id })
-    .expect(expectedStatus);
+it(
+  "returns a StatusCode.NotFoundError if requested orderId is not found",
+  async () => {
+    const ticket = await saveTicket();
+    const cookie = global.signin();
 
-  // create a URL using a random orderId
-  const url = `/api/orders/${new mongoose.Types.ObjectId()}`;
-  expectedStatus = 404;
-  response = await request(app).get(url).set("Cookie", cookie).send().expect(expectedStatus);
-  //console.log(global.createMsg(expect.getState().currentTestName, expectedStatus.toString(), response));
-}, 10000);
+    // Create one order for cookie user
+    await request(app)
+      .post("/api/orders")
+      .set("Cookie", cookie)
+      .send({ ticketId: ticket.id })
+      .expect(StatusCode.Created);
 
-it("returns an 403 if requested order belongs to some other user", async () => {
-  const ticket = await saveTicket();
+    // create a URL using a random orderId
+    const url = `/api/orders/${new mongoose.Types.ObjectId()}`;
+    await request(app).get(url).set("Cookie", cookie).send().expect(StatusCode.NotFoundError);
+  },
+  waitMicroseconds
+);
 
-  let expectedStatus = 201;
-  // Create one order for a random user
-  let response = await request(app)
-    .post("/api/orders")
-    .set("Cookie", global.signin())
-    .send({ ticketId: ticket.id })
-    .expect(expectedStatus);
-  //console.log(response.body);
-  const url = `/api/orders/${response.body.id}`;
-  expectedStatus = 403;
-  response = await request(app).get(url).set("Cookie", global.signin()).send().expect(expectedStatus);
-  //console.log(global.createMsg(expect.getState().currentTestName, expectedStatus.toString(), response));
-}, 10000);
+it(
+  "returns a StatusCode.ForbiddenError if requested order belongs to some other user",
+  async () => {
+    const ticket = await saveTicket();
 
-it("returns an 200 if requested orderId is found and belongs to user", async () => {
-  const ticket = Ticket.build({ title: "Stones Concert", price: 500.0 });
-  await ticket.save();
+    // Create one order for a random user
+    const response = await request(app)
+      .post("/api/orders")
+      .set("Cookie", global.signin())
+      .send({ ticketId: ticket.id })
+      .expect(StatusCode.Created);
+    await request(app)
+      .get(`/api/orders/${response.body.id}`)
+      .set("Cookie", global.signin())
+      .send()
+      .expect(StatusCode.ForbiddenError);
+  },
+  waitMicroseconds
+);
 
-  const cookie = global.signin();
+it(
+  "returns a StatusCode.OK if requested orderId is found and belongs to user",
+  async () => {
+    const ticket = Ticket.build({ title: "Stones Concert", price: 500.0 });
+    await ticket.save();
 
-  let expectedStatus = 201;
-  // Create one order for user #1
-  let response = await request(app)
-    .post("/api/orders")
-    .set("Cookie", cookie)
-    .send({ ticketId: ticket.id })
-    .expect(expectedStatus);
+    const cookie = global.signin();
 
-  const url = `/api/orders/${response.body.id}`;
-  expectedStatus = 200;
-  response = await request(app).get(url).set("Cookie", cookie).send().expect(expectedStatus);
-  //console.log(global.createMsg(expect.getState().currentTestName, expectedStatus.toString(), response));
-}, 10000);
+    // Create one order for user #1
+    let response = await request(app)
+      .post("/api/orders")
+      .set("Cookie", cookie)
+      .send({ ticketId: ticket.id })
+      .expect(StatusCode.Created);
+
+    response = await request(app)
+      .get(`/api/orders/${response.body.id}`)
+      .set("Cookie", cookie)
+      .send()
+      .expect(StatusCode.OK);
+    // console.log(global.createMsg(expect, StatusCode.OK, response.status, response.text));
+  },
+  waitMicroseconds
+);

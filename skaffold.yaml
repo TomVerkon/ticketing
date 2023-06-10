@@ -32,6 +32,13 @@ build:
           - '*/*.js'
       docker:
         dockerfile: Dockerfile
+    - image: tverkon/expiration
+      sync:
+        infer:
+          - '*/*.js'
+      context: expiration
+      docker:
+        dockerfile: Dockerfile
 manifests:
   rawYaml:
     - ./infra/k8s/*

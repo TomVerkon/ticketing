@@ -6,7 +6,14 @@ import { app } from "../app";
 
 declare global {
   var signin: () => string[];
-  var createMsg: (title: string, expected: string, response: request.Response, altResponse?: string) => string;
+  /**
+   * This function in meant to display formatted output while testing
+   * @param {jest.Expect} title - Test name will be obtained by calling title.getState().currentTestName
+   * @param {string | number} expected - The expected result
+   * @param {string | number} actual - The actual result
+   * @param {string} response? - pass response.text in to format/display what is returned to the client
+   */
+  var createMsg: (title: jest.Expect, expected: string | number, actual: string | number, response?: string) => string;
 }
 
 jest.mock("../nats-wrapper");
@@ -59,14 +66,24 @@ global.signin = () => {
   return [`session=${base64}`.trim()];
 };
 
-global.createMsg = (title: string, expected: string, response: request.Response, altResponse?: string): string => {
-  let resTxt: string = "";
-  let returnedStatus = "200";
-  if (!response) {
-    resTxt = altResponse;
-  } else {
-    resTxt = JSON.parse(response.text);
-    returnedStatus = response.status.toString();
+/**
+ * This function in meant to display formatted output while testing
+ * @param {jest.Expect} title - Test name will be obtained by calling title.getState().currentTestName
+ * @param {string | number} expected - The expected result
+ * @param {string | number} actual - The actual result
+ * @param {string} response? - pass response.text in to format/display what is returned to the client
+ */
+global.createMsg = (
+  title: jest.Expect,
+  expected: string | number,
+  actual: string | number,
+  response?: string
+): string => {
+  const testName = title.getState().currentTestName;
+  const msgPrefix = `${testName}\nexpected: ${expected.toString()}, returned: ${actual.toString()}`;
+  let msgSuffix = "";
+  if (response) {
+    msgSuffix = `\n${JSON.stringify(JSON.parse(response), null, 2)}`;
   }
-  return `${title}\nexpected: ${expected}, returned: ${returnedStatus}\n${JSON.stringify(resTxt, null, 2)}`;
+  return `${msgPrefix}${msgSuffix}`;
 };

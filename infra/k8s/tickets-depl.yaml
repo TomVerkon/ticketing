@@ -31,6 +31,9 @@ spec:
                   key: JWT_KEY
             - name: MONGO_URI
               value: 'mongodb://tickets-mongo-srv:27017/tickets'
+            - name: LOG_MSGS
+              value: 'true'
+
 ---
 apiVersion: v1
 kind: Service

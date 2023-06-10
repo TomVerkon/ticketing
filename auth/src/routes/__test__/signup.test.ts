@@ -1,58 +1,60 @@
 import request from "supertest";
 import { app } from "../../app";
+import { StatusCode } from "@tverkon-ticketing/common";
 
-it("returns a 201 on successful signup", async () => {
+it("returns a StatusCode.Created on successful signup", async () => {
   const response = await request(app)
     .post("/api/users/signup")
     .send({ email: "test@test.com", password: "password" })
-    .expect(201);
-  // console.log(global.createMsg(expect.getState().currentTestName, "201", response));
+    .expect(StatusCode.Created);
+  // console.log(global.createMsg(expect, "201", response.status, response.text));
 });
 
-it("returns a 400 with an invalid email", async () => {
+it("returns a StatusCode.RequestValidationError with an invalid email", async () => {
   const response = await request(app)
     .post("/api/users/signup")
     .send({ email: "testtest.com", password: "password" })
-    .expect(400);
-  // console.log(global.createMsg(expect.getState().currentTestName, "400", response));
+    .expect(StatusCode.RequestValidationError);
 });
 
-it("returns a 400 with an invalid password", async () => {
+it("returns a StatusCode.RequestValidationError with an invalid password", async () => {
   const response = await request(app)
     .post("/api/users/signup")
     .send({ email: "test@test.com", password: "pass" })
-    .expect(400);
-  // console.log(global.createMsg(expect.getState().currentTestName, "400", response));
+    .expect(StatusCode.RequestValidationError);
 });
 
-it("returns a 400 with missing email", async () => {
-  const response = await request(app).post("/api/users/signup").send({ email: null, password: "password" }).expect(400);
-  // console.log(global.createMsg(expect.getState().currentTestName, "400", response));
+it("returns a StatusCode.RequestValidationError with missing email", async () => {
+  const response = await request(app)
+    .post("/api/users/signup")
+    .send({ email: null, password: "password" })
+    .expect(StatusCode.RequestValidationError);
 });
 
-it("returns a 400 with missing password", async () => {
+it("returns a StatusCode.RequestValidationError with missing password", async () => {
   const response = await request(app)
     .post("/api/users/signup")
     .send({ email: "test@test.com", password: null })
-    .expect(400);
-  // console.log(global.createMsg(expect.getState().currentTestName, "400", response));
+    .expect(StatusCode.RequestValidationError);
 });
 
-it("return 400, disallows duplicate emails", async () => {
+it("return StatusCode.BadRequestError, disallows duplicate emails", async () => {
   // signup with email: "test@test.com", password: "password"
-  await request(app).post("/api/users/signup").send({ email: "test@test.com", password: "password" }).expect(201);
+  await request(app)
+    .post("/api/users/signup")
+    .send({ email: "test@test.com", password: "password" })
+    .expect(StatusCode.Created);
   const response = await request(app)
     .post("/api/users/signup")
     .send({ email: "test@test.com", password: "password" })
-    .expect(400);
-  // console.log(global.createMsg(expect.getState().currentTestName, "400", response));
+    .expect(StatusCode.BadRequestError);
 });
 
 it("sets a cookie on the session on successful signup", async () => {
   const response = await request(app)
     .post("/api/users/signup")
     .send({ email: "test@test.com", password: "password" })
-    .expect(201);
+    .expect(StatusCode.Created);
   expect(response.get("Set-Cookie")).toBeDefined();
-  // console.log(global.createMsg(expect.getState().currentTestName, "201", response));
+  // console.log(global.createMsg(expect, "201", response.status, response.text));
 });

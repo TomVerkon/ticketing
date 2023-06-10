@@ -1,5 +1,12 @@
 import express, { Request, Response } from "express";
-import { requireAuth, validateRequest, NotFoundError, OrderStatus, BadRequestError } from "@tverkon-ticketing/common";
+import {
+  requireAuth,
+  validateRequest,
+  NotFoundError,
+  OrderStatus,
+  BadRequestError,
+  StatusCode,
+} from "@tverkon-ticketing/common";
 import { body } from "express-validator";
 import mongoose from "mongoose";
 import { Ticket } from "../model/ticket";
@@ -9,7 +16,7 @@ import { natsWrapper } from "../nats-wrapper";
 
 const router = express.Router();
 
-const EXPIRATION_WINDOW_SECONDS = 15 * 60;
+const EXPIRATION_WINDOW_SECONDS = 30 * 60;
 
 router.post(
   "/api/orders",

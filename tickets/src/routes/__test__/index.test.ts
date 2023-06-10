@@ -1,6 +1,7 @@
 import request from "supertest";
 import { app } from "../../app";
 import { Ticket } from "../../model/ticket";
+import { StatusCode } from "@tverkon-ticketing/common";
 
 let waitMicroseconds = 20000;
 
@@ -19,9 +20,9 @@ it(
       await ticket.save();
     }
 
-    const response = await request(app).get(`/api/tickets`).expect(200);
+    const response = await request(app).get(`/api/tickets`).expect(StatusCode.OK);
     expect(response.body.length).toStrictEqual(2);
-    // console.log(global.createMsg(expect.getState().currentTestName, "200", response));
+    // console.log(global.createMsg(expect, StatusCode.OK, response.status, response.text));
   },
   waitMicroseconds
 );

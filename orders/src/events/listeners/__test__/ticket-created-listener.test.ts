@@ -5,6 +5,8 @@ import mongoose from "mongoose";
 import { Message } from "node-nats-streaming";
 import { Ticket } from "../../../model/ticket";
 
+let waitMicroseconds = 20000;
+
 const setup = async () => {
   // create a fake instance of the listener
   // @ts-ignore
@@ -26,21 +28,29 @@ const setup = async () => {
   return { listener, data, msg };
 };
 
-it("should create and save a ticket", async () => {
-  const { listener, data, msg } = await setup();
-  // call the onMessage fn with data, and message objects
-  await listener.onMessage(data, msg);
-  // write assertions to make sure a ticket was created
-  const ticket = await Ticket.findById(new mongoose.Types.ObjectId(data.id));
-  expect(ticket).toBeDefined();
-  expect(ticket.title).toEqual(data.title);
-  expect(ticket.id).toEqual(data.id);
-}, 10000);
+it(
+  "should create and save a ticket",
+  async () => {
+    const { listener, data, msg } = await setup();
+    // call the onMessage fn with data, and message objects
+    await listener.onMessage(data, msg);
+    // write assertions to make sure a ticket was created
+    const ticket = await Ticket.findById(new mongoose.Types.ObjectId(data.id));
+    expect(ticket).toBeDefined();
+    expect(ticket.title).toEqual(data.title);
+    expect(ticket.id).toEqual(data.id);
+  },
+  waitMicroseconds
+);
 
-it("should ack the message", async () => {
-  const { listener, data, msg } = await setup();
-  // call the onMessage fn with data, and message objects
-  await listener.onMessage(data, msg);
-  // write assertions to make sure ack fn was called
-  expect(msg.ack).toBeCalledTimes(1);
-}, 10000);
+it(
+  "should ack the message",
+  async () => {
+    const { listener, data, msg } = await setup();
+    // call the onMessage fn with data, and message objects
+    await listener.onMessage(data, msg);
+    // write assertions to make sure ack fn was called
+    expect(msg.ack).toBeCalledTimes(1);
+  },
+  waitMicroseconds
+);

@@ -4,6 +4,7 @@ import jwt from "jsonwebtoken";
 
 import { validateRequest, BadRequestError } from "@tverkon-ticketing/common";
 import { User } from "../model/user";
+import { StatusCode } from "@tverkon-ticketing/common";
 
 const router = express.Router();
 
@@ -38,7 +39,7 @@ router.post(
 
     req.session = { jwt: userJwt };
 
-    res.status(201).send(user);
+    res.status(StatusCode.Created).send(user);
   }
 );
 

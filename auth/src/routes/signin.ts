@@ -5,6 +5,7 @@ import jwt from "jsonwebtoken";
 import { User } from "../model/user";
 import { validateRequest, BadRequestError } from "@tverkon-ticketing/common";
 import { Password } from "../service/password";
+import { StatusCode } from "@tverkon-ticketing/common";
 
 const router = express.Router();
 
@@ -38,7 +39,7 @@ router.post(
 
     req.session = { jwt: userJwt };
 
-    res.status(201).send(existingUser);
+    res.status(StatusCode.OK).send(existingUser);
   }
 );
 

@@ -31,6 +31,8 @@ spec:
                   key: JWT_KEY
             - name: MONGO_URI
               value: 'mongodb://orders-mongo-srv:27017/orders'
+            - name: LOG_MSGS
+              value: 'true'
 ---
 apiVersion: v1
 kind: Service
