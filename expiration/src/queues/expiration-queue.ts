@@ -20,7 +20,6 @@ expirationQueue.process(async (job) => {
   await new ExpirationCompletePublisher(natsWrapper.client).publish({
     orderId: job.data.orderId,
   });
-  consoleLog("I want to publish an expiration:complete event for orderId:", job.data.orderId);
 });
 
 export { expirationQueue };
