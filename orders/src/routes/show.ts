@@ -1,18 +1,18 @@
-import express, { Request, Response } from 'express'
-import { NotFoundError, requireAuth, ForbiddenError } from '@tverkon-ticketing/common'
-import { Order } from '../model/order'
+import express, { Request, Response } from 'express';
+import { NotFoundError, requireAuth, ForbiddenError } from '@tverkon-ticketing/common';
+import { Order } from '../model/order';
 
-const router = express.Router()
+const router = express.Router();
 
 router.get('/api/orders/:orderId', requireAuth, async (req: Request, res: Response) => {
-  const order = await Order.findById(req.params.orderId).populate('ticket')
+  const order = await Order.findById(req.params.orderId).populate('ticket');
   if (!order) {
-    throw new NotFoundError()
+    throw new NotFoundError();
   }
   if (order.userId !== req.currentUser.id) {
-    throw new ForbiddenError()
+    throw new ForbiddenError();
   }
-  return res.send(order)
-})
+  return res.send(order);
+});
 
-export { router as showOrderRouter }
+export { router as showOrderRouter };

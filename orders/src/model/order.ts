@@ -1,30 +1,30 @@
-import mongoose from 'mongoose'
-import { OrderStatus } from '@tverkon-ticketing/common'
-import { TicketDoc } from './ticket'
-import { updateIfCurrentPlugin } from 'mongoose-update-if-current'
+import mongoose from 'mongoose';
+import { OrderStatus } from '@tverkon-ticketing/common';
+import { TicketDoc } from './ticket';
+import { updateIfCurrentPlugin } from 'mongoose-update-if-current';
 
-export { OrderStatus }
+export { OrderStatus };
 
 // properties that are required to create a new User
 interface OrderAttrs {
-  userId: string
-  status: OrderStatus
-  expiresAt: Date
-  ticket: TicketDoc
+  userId: string;
+  status: OrderStatus;
+  expiresAt: Date;
+  ticket: TicketDoc;
 }
 
 // properties that a User Document has
 export interface OrderDoc extends mongoose.Document {
-  userId: string
-  status: OrderStatus
-  expiresAt: Date
-  version: number
-  ticket: TicketDoc
+  userId: string;
+  status: OrderStatus;
+  expiresAt: Date;
+  version: number;
+  ticket: TicketDoc;
 }
 
 // properties that a User model has
 interface OrderModel extends mongoose.Model<OrderDoc> {
-  build(attrs: OrderAttrs): OrderDoc
+  build(attrs: OrderAttrs): OrderDoc;
 }
 
 const orderSchema = new mongoose.Schema(
@@ -50,18 +50,18 @@ const orderSchema = new mongoose.Schema(
   {
     toJSON: {
       transform(doc, ret) {
-        ret.id = ret._id
-        delete ret._id
+        ret.id = ret._id;
+        delete ret._id;
       }
     }
   }
-)
-orderSchema.set('versionKey', 'version')
-orderSchema.plugin(updateIfCurrentPlugin)
+);
+orderSchema.set('versionKey', 'version');
+orderSchema.plugin(updateIfCurrentPlugin);
 orderSchema.statics.build = (attrs: OrderAttrs) => {
-  return new Order(attrs)
-}
+  return new Order(attrs);
+};
 
-const Order = mongoose.model<OrderDoc, OrderModel>('Order', orderSchema)
+const Order = mongoose.model<OrderDoc, OrderModel>('Order', orderSchema);
 
-export { Order }
+export { Order };

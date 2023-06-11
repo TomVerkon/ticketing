@@ -1,4 +1,4 @@
-import express, { Request, Response } from 'express'
+import express, { Request, Response } from 'express';
 import {
   requireAuth,
   validateRequest,
@@ -6,20 +6,20 @@ import {
   OrderStatus,
   BadRequestError,
   StatusCode
-} from '@tverkon-ticketing/common'
-import { body } from 'express-validator'
-import mongoose from 'mongoose'
-import { Ticket } from '../model/ticket'
-import { Order } from '../model/order'
-import { OrderCreatedPublisher } from '../events/publishers/order-created-publisher'
-import { natsWrapper } from '../nats-wrapper'
+} from '@tverkon-ticketing/common';
+import { body } from 'express-validator';
+import mongoose from 'mongoose';
+import { Ticket } from '../model/ticket';
+import { Order } from '../model/order';
+import { OrderCreatedPublisher } from '../events/publishers/order-created-publisher';
+import { natsWrapper } from '../nats-wrapper';
 
-const router = express.Router()
+const router = express.Router();
 
-let expirationMinutes = process.env.EXPIRATION_MINUTES
-if (!expirationMinutes || isNaN(parseInt(expirationMinutes))) expirationMinutes = '1'
+let expirationMinutes = process.env.EXPIRATION_MINUTES;
+if (!expirationMinutes || isNaN(parseInt(expirationMinutes))) expirationMinutes = '1';
 
-const EXPIRATION_WINDOW_SECONDS = parseInt(expirationMinutes) * 60
+const EXPIRATION_WINDOW_SECONDS = parseInt(expirationMinutes) * 60;
 
 router.post(
   '/api/orders',
@@ -33,22 +33,22 @@ router.post(
   ],
   validateRequest,
   async (req: Request, res: Response) => {
-    const { ticketId } = req.body
-    const userId = req.currentUser!.id
+    const { ticketId } = req.body;
+    const userId = req.currentUser!.id;
 
     // find the ticket the user is trying to order
-    const ticket = await Ticket.findById(ticketId)
+    const ticket = await Ticket.findById(ticketId);
     if (!ticket) {
-      throw new BadRequestError(`Ticket does not exist`)
+      throw new BadRequestError(`Ticket does not exist`);
     }
 
     if (await ticket.isReserved()) {
-      throw new BadRequestError('Ticket is already reserved')
+      throw new BadRequestError('Ticket is already reserved');
     }
 
     // calculate an expiration date for this order
-    let expiresAt = new Date()
-    expiresAt.setSeconds(expiresAt.getSeconds() + EXPIRATION_WINDOW_SECONDS)
+    let expiresAt = new Date();
+    expiresAt.setSeconds(expiresAt.getSeconds() + EXPIRATION_WINDOW_SECONDS);
 
     // build the order and save it to the database
     const order = Order.build({
@@ -56,8 +56,8 @@ router.post(
       status: OrderStatus.Created,
       expiresAt,
       ticket
-    })
-    await order.save()
+    });
+    await order.save();
 
     // publish an event saying an order was created
     const orderCreatedEvent = {
@@ -70,12 +70,12 @@ router.post(
         id: ticket.id,
         price: ticket.price
       }
-    }
+    };
     // console.log('publishing OrderCreatedEvent: ', orderCreatedEvent);
-    await new OrderCreatedPublisher(natsWrapper.client).publish(orderCreatedEvent)
+    await new OrderCreatedPublisher(natsWrapper.client).publish(orderCreatedEvent);
 
-    return res.status(201).send(order)
+    return res.status(201).send(order);
   }
-)
+);
 
-export { router as createOrderRouter }
+export { router as createOrderRouter };

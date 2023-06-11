@@ -1,16 +1,16 @@
-import mongoose from 'mongoose'
-import { OrderStatus } from '@tverkon-ticketing/common'
-import { updateIfCurrentPlugin } from 'mongoose-update-if-current'
+import mongoose from 'mongoose';
+import { OrderStatus } from '@tverkon-ticketing/common';
+import { updateIfCurrentPlugin } from 'mongoose-update-if-current';
 
-export { OrderStatus }
+export { OrderStatus };
 
 /** properties that are required to create a new Order */
 interface OrderAttrs {
-  id: string
-  status: OrderStatus
-  version: number
-  userId: string
-  price: number
+  id: string;
+  status: OrderStatus;
+  version: number;
+  userId: string;
+  price: number;
 }
 
 /**
@@ -18,15 +18,15 @@ interface OrderAttrs {
  * mongoose.Document already has an id property
  */
 export interface OrderDoc extends mongoose.Document {
-  status: OrderStatus
-  version: number
-  userId: string
-  price: number
+  status: OrderStatus;
+  version: number;
+  userId: string;
+  price: number;
 }
 
 // properties that a User model has
 interface OrderModel extends mongoose.Model<OrderDoc> {
-  build(attrs: OrderAttrs): OrderDoc
+  build(attrs: OrderAttrs): OrderDoc;
 }
 
 const orderSchema = new mongoose.Schema(
@@ -50,14 +50,14 @@ const orderSchema = new mongoose.Schema(
   {
     toJSON: {
       transform(doc, ret) {
-        ret.id = ret._id
-        delete ret._id
+        ret.id = ret._id;
+        delete ret._id;
       },
     },
   }
-)
-orderSchema.set('versionKey', 'version')
-orderSchema.plugin(updateIfCurrentPlugin)
+);
+orderSchema.set('versionKey', 'version');
+orderSchema.plugin(updateIfCurrentPlugin);
 orderSchema.statics.build = (attrs: OrderAttrs) => {
   return new Order({
     _id: attrs.id,
@@ -65,9 +65,9 @@ orderSchema.statics.build = (attrs: OrderAttrs) => {
     version: attrs.version,
     userId: attrs.userId,
     price: attrs.price,
-  })
-}
+  });
+};
 
-const Order = mongoose.model<OrderDoc, OrderModel>('Order', orderSchema)
+const Order = mongoose.model<OrderDoc, OrderModel>('Order', orderSchema);
 
-export { Order }
+export { Order };
