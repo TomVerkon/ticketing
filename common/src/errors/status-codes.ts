@@ -19,5 +19,5 @@ export enum StatusCode {
   /** NotFoundError = 404 */
   NotFoundError = 404,
   /** DatabaseConnectionError = 500 */
-  DatabaseConnectionError = 500,
+  DatabaseConnectionError = 500
 }

@@ -1,16 +1,16 @@
-import { CustomError, ErrorMessages } from './custom-error';
-import { StatusCode } from './status-codes';
+import { CustomError, ErrorMessages } from './custom-error'
+import { StatusCode } from './status-codes'
 
 /** NotAuthorizedError = 401 */
 export class NotAuthorizedError extends CustomError {
-  statusCode = StatusCode.NotAuthorizedError;
+  statusCode = StatusCode.NotAuthorizedError
 
   constructor() {
-    super('Not Authenticated');
-    Object.setPrototypeOf(this, NotAuthorizedError.prototype);
+    super('Not Authenticated')
+    Object.setPrototypeOf(this, NotAuthorizedError.prototype)
   }
 
   serializeErrors(): ErrorMessages {
-    return [{ message: super.message }];
+    return [{ message: super.message }]
   }
 }

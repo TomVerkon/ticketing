@@ -1,53 +1,53 @@
-import request from "supertest";
-import { app } from "../../app";
-import { Order } from "../../model/order";
-import { Ticket } from "../../model/ticket";
-import { StatusCode } from "@tverkon-ticketing/common";
+import request from 'supertest'
+import { app } from '../../app'
+import { Order } from '../../model/order'
+import { Ticket } from '../../model/ticket'
+import { StatusCode } from '@tverkon-ticketing/common'
 
 const saveTicket = async () => {
-  const ticket = Ticket.build({ title: "Stones Concert", price: 500.0 });
-  return await ticket.save();
-};
+  const ticket = Ticket.build({ title: 'Stones Concert', price: 500.0 })
+  return await ticket.save()
+}
 
-let waitMicroseconds = 20000;
+let waitMicroseconds = 20000
 
 it(
-  "returns all the orders with tickets assigned to the authorized user",
+  'returns all the orders with tickets assigned to the authorized user',
   async () => {
     // Create three tickets
-    const ticket1 = await saveTicket();
-    const ticket2 = await saveTicket();
-    const ticket3 = await saveTicket();
+    const ticket1 = await saveTicket()
+    const ticket2 = await saveTicket()
+    const ticket3 = await saveTicket()
 
-    const expectedStatus = StatusCode.Created;
+    const expectedStatus = StatusCode.Created
     // Create one order for user #1
     let response = await request(app)
-      .post("/api/orders")
-      .set("Cookie", global.signin())
+      .post('/api/orders')
+      .set('Cookie', global.signin())
       .send({ ticketId: ticket1.id })
-      .expect(expectedStatus);
+      .expect(expectedStatus)
 
-    const cookie = global.signin();
+    const cookie = global.signin()
     // Create two orders for user #2
 
     const { body: orderTwo } = await request(app)
-      .post("/api/orders")
-      .set("Cookie", cookie)
+      .post('/api/orders')
+      .set('Cookie', cookie)
       .send({ ticketId: ticket2.id })
-      .expect(expectedStatus);
+      .expect(expectedStatus)
 
     const { body: orderThree } = await request(app)
-      .post("/api/orders")
-      .set("Cookie", cookie)
+      .post('/api/orders')
+      .set('Cookie', cookie)
       .send({ ticketId: ticket3.id })
-      .expect(expectedStatus);
+      .expect(expectedStatus)
 
     // Make a request to get orders for user #2
-    response = await request(app).get("/api/orders").set("Cookie", cookie).send({});
+    response = await request(app).get('/api/orders').set('Cookie', cookie).send({})
     // Make sure we got back the orders for user #2
-    expect(response.body.length).toEqual(2);
-    expect(response.body[0].id).toEqual(orderTwo.id);
-    expect(response.body[1].id).toEqual(orderThree.id);
+    expect(response.body.length).toEqual(2)
+    expect(response.body[0].id).toEqual(orderTwo.id)
+    expect(response.body[1].id).toEqual(orderThree.id)
   },
   waitMicroseconds
-);
+)

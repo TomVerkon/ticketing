@@ -1,15 +1,15 @@
-import express, { Request, Response } from "express";
-import { NotFoundError } from "@tverkon-ticketing/common";
-import { Ticket } from "../model/ticket";
+import express, { Request, Response } from 'express'
+import { NotFoundError } from '@tverkon-ticketing/common'
+import { Ticket } from '../model/ticket'
 
-const router = express.Router();
+const router = express.Router()
 
-router.get("/api/tickets/:id", async (req: Request, res: Response) => {
-  const ticket = await Ticket.findById(req.params.id);
+router.get('/api/tickets/:id', async (req: Request, res: Response) => {
+  const ticket = await Ticket.findById(req.params.id)
   if (!ticket) {
-    throw new NotFoundError();
+    throw new NotFoundError()
   }
-  return res.send(ticket);
-});
+  return res.send(ticket)
+})
 
-export { router as showTicketRouter };
+export { router as showTicketRouter }

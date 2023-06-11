@@ -1,16 +1,16 @@
-import { CustomError, ErrorMessages } from './custom-error';
-import { StatusCode } from './status-codes';
+import { CustomError, ErrorMessages } from './custom-error'
+import { StatusCode } from './status-codes'
 
 /** DatabaseConnectionError = 500 */
 export class DatabaseConnectionError extends CustomError {
-  statusCode = StatusCode.DatabaseConnectionError;
+  statusCode = StatusCode.DatabaseConnectionError
 
   constructor() {
-    super('Error connecting to database');
-    Object.setPrototypeOf(this, DatabaseConnectionError.prototype);
+    super('Error connecting to database')
+    Object.setPrototypeOf(this, DatabaseConnectionError.prototype)
   }
 
   serializeErrors(): ErrorMessages {
-    return [{ message: super.message }];
+    return [{ message: super.message }]
   }
 }

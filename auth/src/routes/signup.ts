@@ -1,32 +1,32 @@
-import express, { Request, Response } from "express";
-import { body } from "express-validator";
-import jwt from "jsonwebtoken";
+import express, { Request, Response } from 'express'
+import { body } from 'express-validator'
+import jwt from 'jsonwebtoken'
 
-import { validateRequest, BadRequestError } from "@tverkon-ticketing/common";
-import { User } from "../model/user";
-import { StatusCode } from "@tverkon-ticketing/common";
+import { validateRequest, BadRequestError } from '@tverkon-ticketing/common'
+import { User } from '../model/user'
+import { StatusCode } from '@tverkon-ticketing/common'
 
-const router = express.Router();
+const router = express.Router()
 
 router.post(
-  "/api/users/signup",
+  '/api/users/signup',
   [
-    body("email").trim().isEmail().withMessage("Email must be valid"),
-    body("password").trim().isLength({ min: 8, max: 20 }).withMessage("Pwd must be between 8 and 20 chars inclusive"),
+    body('email').trim().isEmail().withMessage('Email must be valid'),
+    body('password').trim().isLength({ min: 8, max: 20 }).withMessage('Pwd must be between 8 and 20 chars inclusive'),
   ],
   validateRequest,
 
   async (req: Request, res: Response) => {
-    const { email, password } = req.body;
+    const { email, password } = req.body
 
-    const existingUser = await User.findOne({ email });
+    const existingUser = await User.findOne({ email })
 
     if (existingUser) {
-      throw new BadRequestError("email in use!", "email");
+      throw new BadRequestError('email in use!', 'email')
     }
-    const user = User.build({ email, password });
+    const user = User.build({ email, password })
 
-    await user.save();
+    await user.save()
 
     // generate jwt and store in session object
     const userJwt = jwt.sign(
@@ -35,12 +35,12 @@ router.post(
         email: user.email,
       },
       process.env.JWT_KEY!
-    );
+    )
 
-    req.session = { jwt: userJwt };
+    req.session = { jwt: userJwt }
 
-    res.status(StatusCode.Created).send(user);
+    res.status(StatusCode.Created).send(user)
   }
-);
+)
 
-export { router as signupRouter };
+export { router as signupRouter }

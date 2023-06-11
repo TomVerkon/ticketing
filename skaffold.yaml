@@ -39,6 +39,13 @@ build:
       context: expiration
       docker:
         dockerfile: Dockerfile
+    - image: tverkon/payments
+      sync:
+        infer:
+          - '*/*.js'
+      context: payments
+      docker:
+        dockerfile: Dockerfile
 manifests:
   rawYaml:
     - ./infra/k8s/*
