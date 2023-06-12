@@ -1,6 +1,5 @@
 export * from './utils/log-messages';
 export * from './utils/log-console';
-export * from './utils/create-message';
 export * from './errors/status-codes';
 export * from './errors/bad-request-error';
 export * from './errors/database-connection-error';
