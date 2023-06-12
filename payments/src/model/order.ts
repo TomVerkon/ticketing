@@ -27,6 +27,7 @@ export interface OrderDoc extends mongoose.Document {
 // properties that a User model has
 interface OrderModel extends mongoose.Model<OrderDoc> {
   build(attrs: OrderAttrs): OrderDoc;
+  findByEvent(event: { id: string; version: number }): Promise<OrderDoc | null>;
 }
 
 const orderSchema = new mongoose.Schema(
@@ -66,6 +67,10 @@ orderSchema.statics.build = (attrs: OrderAttrs) => {
     userId: attrs.userId,
     price: attrs.price,
   });
+};
+
+orderSchema.statics.findByEvent = async (data: OrderAttrs) => {
+  return Order.findOne({ _id: data.id, version: data.version - 1 });
 };
 
 const Order = mongoose.model<OrderDoc, OrderModel>('Order', orderSchema);
