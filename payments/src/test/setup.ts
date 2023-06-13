@@ -5,7 +5,7 @@ import request from 'supertest';
 import { app } from '../app';
 
 declare global {
-  var signin: () => string[];
+  var signin: (id?: string) => string[];
   /**
    * This function in meant to display formatted output while testing
    * @param {jest.Expect} title - Test name will be obtained by calling title.getState().currentTestName
@@ -50,9 +50,12 @@ afterAll(async () => {
   }
 });
 
-global.signin = () => {
+global.signin = (id?: string) => {
   // build a JWT payload. {id, email}
-  const payload = { id: new mongoose.Types.ObjectId().toHexString(), email: 'test@test.com' };
+  const payload = {
+    id: id || new mongoose.Types.ObjectId().toHexString(),
+    email: 'test@test.com',
+  };
   // create JWT
   const token = jwt.sign(payload, 'asdf');
   // build a session Object. {jwt: MyJWT}
