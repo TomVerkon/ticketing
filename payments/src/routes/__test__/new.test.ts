@@ -4,8 +4,10 @@ import { Order } from '../../model/order';
 import { natsWrapper } from '../../nats-wrapper';
 import { OrderStatus, StatusCode } from '@tverkon-ticketing/common';
 import mongoose from 'mongoose';
+import { stripe } from '../../stripe';
+import { Payment } from '../../model/payment';
 
-let waitMicroseconds = 20000;
+let waitMicroseconds = 30000;
 
 it(
   'returns a StatusCode.NotAuthorizedError if user not logged in',
@@ -69,6 +71,120 @@ it(
       .set('Cookie', global.signin(userId))
       .send({ token: 'abcdef', orderId: order.id });
     expect(response.status).toEqual(StatusCode.BadRequestError);
+  },
+  waitMicroseconds
+);
+
+it(
+  'calls stripe successfully and returns StatusCode.Created',
+  async () => {
+    const userId = new mongoose.Types.ObjectId().toHexString();
+    const price = Math.floor(Math.random() * 100000);
+    const order = Order.build({
+      id: new mongoose.Types.ObjectId().toHexString(),
+      status: OrderStatus.Created,
+      version: 0,
+      userId,
+      price,
+    });
+    await order.save();
+
+    const response = await request(app)
+      .post('/api/payments')
+      .set('Cookie', global.signin(userId))
+      .send({ token: 'tok_visa', orderId: order.id })
+      .expect(StatusCode.Created);
+
+    const stripeCharges = await stripe.charges.list({ limit: 10 });
+    const stripeCharge = stripeCharges.data.find(charge => {
+      return charge.amount === price * 100;
+    });
+
+    expect(stripeCharge).toBeDefined();
+    expect(stripeCharge.amount).toEqual(order.price * 100);
+    expect(stripeCharge.currency).toEqual('usd');
+  },
+  waitMicroseconds
+);
+
+it(
+  'returns a StatusCode.BadRequestError if bad token used',
+  async () => {
+    const userId = new mongoose.Types.ObjectId().toHexString();
+    const price = Math.floor(Math.random() * 100000);
+    const order = Order.build({
+      id: new mongoose.Types.ObjectId().toHexString(),
+      status: OrderStatus.Created,
+      version: 0,
+      userId,
+      price,
+    });
+    await order.save();
+
+    const response = await request(app)
+      .post('/api/payments')
+      .set('Cookie', global.signin(userId))
+      .send({ token: 'bad_tok_visa', orderId: order.id })
+      .expect(StatusCode.BadRequestError);
+  },
+  waitMicroseconds
+);
+
+it(
+  'creates a payment record in the db',
+  async () => {
+    const userId = new mongoose.Types.ObjectId().toHexString();
+    const price = Math.floor(Math.random() * 100000);
+    const order = Order.build({
+      id: new mongoose.Types.ObjectId().toHexString(),
+      status: OrderStatus.Created,
+      version: 0,
+      userId,
+      price,
+    });
+    await order.save();
+
+    const response = await request(app)
+      .post('/api/payments')
+      .set('Cookie', global.signin(userId))
+      .send({ token: 'tok_visa', orderId: order.id })
+      .expect(StatusCode.Created);
+
+    const stripeCharges = await stripe.charges.list({ limit: 10 });
+    const stripeCharge = stripeCharges.data.find(charge => {
+      return charge.amount === price * 100;
+    });
+    expect(stripeCharge).toBeDefined();
+    expect(stripeCharge.amount).toEqual(order.price * 100);
+    expect(stripeCharge.currency).toEqual('usd');
+
+    const payment = await Payment.findOne({ orderId: order.id, paymentId: stripeCharge.id });
+    expect(payment).not.toBeNull();
+  },
+  waitMicroseconds
+);
+
+it(
+  'publishes an event',
+  async () => {
+    const userId = new mongoose.Types.ObjectId().toHexString();
+    const price = Math.floor(Math.random() * 100000);
+    const order = Order.build({
+      id: new mongoose.Types.ObjectId().toHexString(),
+      status: OrderStatus.Created,
+      version: 0,
+      userId,
+      price,
+    });
+    await order.save();
+
+    const response = await request(app)
+      .post('/api/payments')
+      .set('Cookie', global.signin(userId))
+      .send({ token: 'tok_visa', orderId: order.id })
+      .expect(StatusCode.Created);
+
+    expect(natsWrapper.client.publish).toHaveBeenCalled();
   },
   waitMicroseconds
 );
