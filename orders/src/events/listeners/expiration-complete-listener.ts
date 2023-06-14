@@ -13,13 +13,16 @@ export class ExpirationCompleteListener extends Listener<ExpirationCompleteEvent
     const { orderId } = data;
     const order = await Order.findById(orderId).populate('ticket');
     if (!order) throw new NotFoundError();
-    order.set({ status: OrderStatus.Cancelled });
-    await order.save();
-    new OrderCancelledPublisher(this.client).publish({
-      id: order.id,
-      version: order.version,
-      ticket: { id: order.ticket.id }
-    });
+
+    if (order.status !== OrderStatus.Complete) {
+      order.set({ status: OrderStatus.Cancelled });
+      await order.save();
+      new OrderCancelledPublisher(this.client).publish({
+        id: order.id,
+        version: order.version,
+        ticket: { id: order.ticket.id }
+      });
+    }
 
     msg.ack();
   }
